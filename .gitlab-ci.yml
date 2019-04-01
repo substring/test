@@ -1,4 +1,5 @@
 image: archlinux/base:latest
+  - entrypoint: entrypoint.sh
 
 cache:
   paths:
