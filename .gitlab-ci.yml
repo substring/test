@@ -19,4 +19,5 @@ build_packages:
   stage: build
   script:
     - echo "Building packages in $(pwd). HOME=$HOME, user is $(whoami)"
+    - cp packages_*.lst /work
     - ./buildContainer.sh
