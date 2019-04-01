@@ -1,0 +1,11 @@
+# GROOVYARCADE details
+GA_VERSION=test
+
+# ARCHLINUX version
+ARCH_VERSION=2019.03.01
+ARCH_URL=http://archlinux.mirrors.benatherton.com
+ARCH_URL=http://archlinux.mirrors.ovh.net/archlinux
+ARCH_SHA1=e32acb5a7b7cfb2bdba10697cce48ab69e13c186
+
+# MAME version
+MAME_VERSION=0208

@@ -1,0 +1,67 @@
+--- linux/trunk/PKGBUILD        2019-03-13 14:24:04.271738743 +0000
++++ linux-15khz/trunk/PKGBUILD  2019-03-13 14:20:43.529230615 +0000
+@@ -2,8 +2,8 @@
+ # Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+ # Maintainer: Thomas Baechler <thomas@archlinux.org>
+ 
+-pkgbase=linux               # Build stock -ARCH kernel
+-#pkgbase=linux-custom       # Build kernel with a different name
++#pkgbase=linux               # Build stock -ARCH kernel
++pkgbase=linux-15khz          # Build kernel with a different name
+ _srcver=5.0.5-arch1
+ pkgver=${_srcver//-/.}
+ pkgrel=1
+@@ -13,23 +13,25 @@
+ makedepends=(xmlto kmod inetutils bc libelf git python-sphinx graphviz)
+ options=('!strip')
+ _srcname=archlinux-linux
++_15kpatchcommitid=81ec4f56aa0ee059467186bff9ebf1b7dde69d0c
+ source=(
+   "$_srcname::git+https://git.archlinux.org/linux.git?signed#tag=v$_srcver"
+   config         # the main kernel config file
+   60-linux.hook  # pacman hook for depmod
+   90-linux.hook  # pacman hook for initramfs regeneration
+   linux.preset   # standard config files for mkinitcpio ramdisk
++  https://raw.githubusercontent.com/D0023R/linux_kernel_15khz/${_15kpatchcommitid}/linux-5.0/01_ati_9200_pllfix.diff
++  https://raw.githubusercontent.com/D0023R/linux_kernel_15khz/${_15kpatchcommitid}/linux-5.0/02_arcadevga_3000.diff
++  https://raw.githubusercontent.com/D0023R/linux_kernel_15khz/${_15kpatchcommitid}/linux-5.0/03_linux_15khz.diff
++  https://raw.githubusercontent.com/D0023R/linux_kernel_15khz/${_15kpatchcommitid}/linux-5.0/04_linux_15khz_scanoutpos.diff
++  https://raw.githubusercontent.com/D0023R/linux_kernel_15khz/${_15kpatchcommitid}/linux-5.0/05_linux_15khz_interlaced_mode_fix.diff
+ )
+ validpgpkeys=(
+   'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
+   '647F28654894E3BD457199BE38DBBDC86092693E'  # Greg Kroah-Hartman
+   '8218F88849AAC522E94CF470A5E9288C4FA415FA'  # Jan Alexander Steffens (heftig)
+ )
+-sha256sums=('SKIP'
+-            'df2ce998b050c707950c555f7f6ec0efcb8498fca10b4bce45f681844c8aa0ab'
+-            'ae2e95db94ef7176207c690224169594d49445e04249d2499e9d2fbc117a0b21'
+-            'c043f3033bb781e2688794a59f6d1f7ed49ef9b13eb77ff9a425df33a244a636'
+-            'ad6344badc91ad0630caacde83f7f9b97276f80d26a20619a87952be65492c65')
++
+ 
+ _kernelname=${pkgbase#linux}
+ : ${_kernelname:=-ARCH}
+@@ -46,7 +48,7 @@
+   for src in "${source[@]}"; do
+     src="${src%%::*}"
+     src="${src##*/}"
+-    [[ $src = *.patch ]] || continue
++    [[ $src = *.patch || $src = *.diff ]] || continue
+     msg2 "Applying patch $src..."
+     patch -Np1 < "../$src"
+   done
+@@ -241,3 +243,13 @@
+ done
+ 
+ # vim:set ts=8 sts=2 sw=2 et:
++md5sums=('SKIP'
++         'cd7a294e89c227f69023e311d5198b9d'
++         'ce6c81ad1ad1f8b333fd6077d47abdaf'
++         'b448c99f0ea9aaee9b13784958a98fd0'
++         'a329f9581060d555dc7358483de9760a'
++         '1e44465f608476a011fd29a7f713b7fc'
++         '30679c2a48459ae666cb64c6dfb0944a'
++         '5b1e52ef17febc6953813607d99b52ff'
++         '8bc9b9658e9d39b5ad30df45690c8256'
++         '96ca9d01e805616a44cc6ea45114f7a7')

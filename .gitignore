@@ -1,0 +1,4 @@
+*.log
+work/
+logs/
+GITHUB_TOKEN

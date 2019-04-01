@@ -1,0 +1,17 @@
+_15kpatchcommitid=81ec4f56aa0ee059467186bff9ebf1b7dde69d0c
+source=(
+  "$_srcname::git+https://git.archlinux.org/linux.git?signed#tag=v$_srcver"
+  config         # the main kernel config file
+  60-linux.hook  # pacman hook for depmod
+  90-linux.hook  # pacman hook for initramfs regeneration
+  linux.preset   # standard config files for mkinitcpio ramdisk
+  https://raw.githubusercontent.com/D0023R/linux_kernel_15khz/${_15kpatchcommitid}/linux-5.0/01_ati_9200_pllfix.diff 
+  https://raw.githubusercontent.com/D0023R/linux_kernel_15khz/${_15kpatchcommitid}/linux-5.0/02_arcadevga_3000.diff
+  https://raw.githubusercontent.com/D0023R/linux_kernel_15khz/${_15kpatchcommitid}/linux-5.0/03_linux_15khz.diff
+  https://raw.githubusercontent.com/D0023R/linux_kernel_15khz/${_15kpatchcommitid}/linux-5.0/04_linux_15khz_scanoutpos.diff
+  https://raw.githubusercontent.com/D0023R/linux_kernel_15khz/${_15kpatchcommitid}/linux-5.0/05_linux_15khz_interlaced_mode_fix.diff
+)
+
+
+
+[[ $src = *.patch || $src = *.diff ]] || continue
