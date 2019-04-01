@@ -9,7 +9,7 @@ before_script:
   - pacman-key --init && \
     pacman-key --populate archlinux && \
     pacman -Sy
-  - pacman -Sy --noconfirm --needed archiso mkinitcpio cdrtools asp base-devel ccache haveged namcap wget
+  - pacman -Sy --noconfirm --needed archiso mkinitcpio cdrtools asp base-devel ccache haveged namcap wget docker
   - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
   - sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
   - sed -ri 's/^BUILDENV=(.*)\!ccache(.*)/BUILDENV=\1ccache\2/' /etc/makepkg.conf
