@@ -1,5 +1,4 @@
 image: archlinux/base:latest
-  entrypoint: ["entrypoint.sh"]
 
 stages:
   - makepkg
