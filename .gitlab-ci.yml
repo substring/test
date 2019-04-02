@@ -1,6 +1,11 @@
 image: archlinux/base:latest
   entrypoint: ["entrypoint.sh"]
 
+stages:
+  - makepkg
+  - build_iso
+  - release
+
 cache:
   paths:
   - /work/cache
@@ -16,10 +21,21 @@ before_script:
   - sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
   - sed -ri 's/^BUILDENV=(.*)\!ccache(.*)/BUILDENV=\1ccache\2/' /etc/makepkg.conf
   - mkdir -p /work /work/cache/ccache
-  
-build_packages:
-  stage: build
+
+create_packages:
+  stage: makepkg
   script:
     - echo "Building packages in $(pwd). HOME=$HOME, user is $(whoami)"
     - cp packages_*.lst /work
     - ./builder.sh
+
+build_groovyarcade_iso:
+  stage: build_iso
+  script:
+    - echo "Building iso"
+    - ./buildGA.sh
+
+release_github:
+  stage: release
+  script:
+    - echo "Releasing GroovyArcade"
