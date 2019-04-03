@@ -18,16 +18,15 @@ before_script:
   - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
   - sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
   - sed -ri 's/^BUILDENV=(.*)\!ccache(.*)/BUILDENV=\1ccache\2/' /etc/makepkg.conf
-  - mkdir -p /work /work/cache/ccache
 
 create_packages:
   stage: makepkg
   script:
     - useradd -ms /bin/bash -d /work build
     - echo 'build ALL=(root) NOPASSWD:ALL' > /etc/sudoers.d/user && chmod 0440 /etc/sudoers.d/user
-    - echo "Building packages in $(pwd). HOME=$HOME, user is $(whoami)"
-    - cp packages_*.lst buildContainer.sh /work
-    - cp -R package /work
+    - su - build -c "mkdir -p /work /work/cache/ccache"
+    - su - build -c "cp packages_*.lst buildContainer.sh /work"
+    - su - build -c "cp -R package /work"
     - su - build -c "cd /work && ./buildContainer.sh"
 
 build_groovyarcade_iso:
