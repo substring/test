@@ -45,13 +45,13 @@ index 0a8780d52b1..42ab3bd637e 100644
 -  cd mame-mame${pkgver/./}
 +  cd mame-mame${_mamever}
 -  make \
-+  CCACHE_CPP2=yes make OVERRIDE_CC="ccache gcc" OVERRIDE_CXX="ccache g++" VERBOSE=1 \
++  CCACHE_CPP2=yes make OVERRIDE_CC="ccache gcc" OVERRIDE_CXX="ccache g++" \
      NOWERROR=1 \
      OPTIMIZE=2 \
      TOOLS=1 \
 -    ARCHOPTS=-flifetime-dse=1
 +    PTR64=1 NOASM=0\
-+    ARCHOPTS=-flifetime-dse=1 TARGET=mame SUBTARGET=tiny
++    ARCHOPTS=-flifetime-dse=1 TARGET=mame SUBTARGET=arcade
  }
  
  package() {
