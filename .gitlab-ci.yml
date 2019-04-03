@@ -26,7 +26,7 @@ create_packages:
     - echo 'build ALL=(root) NOPASSWD:ALL' > /etc/sudoers.d/user && chmod 0440 /etc/sudoers.d/user
     - mkdir -p /work/cache/ccache"
     - cp packages_*.lst buildContainer.sh /work
-    - cp -R package /work"
+    - cp -R package /work
     - chown -R build:build /work
     - su - build -c "cd /work && ./buildContainer.sh"
 
