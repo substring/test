@@ -24,9 +24,10 @@ create_packages:
   script:
     - useradd -ms /bin/bash -d /work build
     - echo 'build ALL=(root) NOPASSWD:ALL' > /etc/sudoers.d/user && chmod 0440 /etc/sudoers.d/user
-    - su - build -c "mkdir -p /work /work/cache/ccache"
-    - su - build -c "cp packages_*.lst buildContainer.sh /work"
-    - su - build -c "cp -R package /work"
+    - mkdir -p /work /work/cache/ccache"
+    - cp packages_*.lst buildContainer.sh /work"
+    - cp -R package /work"
+    - chown -R build:build /work
     - su - build -c "cd /work && ./buildContainer.sh"
 
 build_groovyarcade_iso:
