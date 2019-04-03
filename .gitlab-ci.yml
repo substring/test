@@ -24,9 +24,11 @@ before_script:
 create_packages:
   stage: makepkg
   script:
+    - echo 'build ALL=(root) NOPASSWD:ALL' > /etc/sudoers.d/user && chmod 0440 /etc/sudoers.d/user
     - echo "Building packages in $(pwd). HOME=$HOME, user is $(whoami)"
-    - cp packages_*.lst /work
-    - ./builder.sh
+    - cp packages_*.lst buildContainer.sh /work
+    - cp -R package /work
+    - su - build -c "cd /work && ./buildContainer.sh"
 
 build_groovyarcade_iso:
   stage: build_iso
