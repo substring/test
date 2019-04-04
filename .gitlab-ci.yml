@@ -27,15 +27,15 @@ create_packages:
     - chown -R build:build /work
     - CCACHE_DIR=/work/cache/ccache ccache -s
     - cat /proc/cpuinfo
+    - ln -s /work work
     - su - build -c "cd /work && ./buildContainer.sh"
   cache:
     key: one-key-to-rule-them-all
     paths:
-      - /work/cache
-      - /var/cache/pacman/pkg/
+      - work/cache
   artifacts:
     paths:
-      - /work/output
+      - work/output
     expire_in: 3 mos
 
 build_groovyarcade_iso:
