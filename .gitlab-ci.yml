@@ -11,14 +11,14 @@ before_script:
   - pacman-key --init && \
     pacman-key --populate archlinux && \
     pacman -Sy
-  - pacman -Sy --noconfirm --needed archiso mkinitcpio cdrtools asp base-devel ccache haveged namcap wget
-  - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
-  - sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
-  - sed -ri 's/^BUILDENV=(.*)\!ccache(.*)/BUILDENV=\1ccache\2/' /etc/makepkg.conf
+  
 
 create_packages:
   stage: makepkg
   script:
+    - pacman -Sy --noconfirm --needed mkinitcpio asp base-devel ccache haveged namcap wget
+    - sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
+    - sed -ri 's/^BUILDENV=(.*)\!ccache(.*)/BUILDENV=\1ccache\2/' /etc/makepkg.conf
     - mkdir -p work/cache/ccache
     - ln -s "$(pwd)"/work /work
     - cp packages_*.lst buildContainer.sh /work
@@ -44,9 +44,11 @@ build_groovyarcade_iso:
   stage: build_iso
   script:
     - echo "Building iso"
-    - ./buildGA.sh
+    - pacman -Sy --noconfirm --needed archiso mkinitcpio cdrtools asp wget
+    - sudo ./buildGA.sh
 
 release_github:
   stage: release
   script:
     - echo "Releasing GroovyArcade"
+    - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
