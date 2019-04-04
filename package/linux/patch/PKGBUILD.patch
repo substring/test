@@ -8,7 +8,7 @@
 -#pkgbase=linux-custom       # Build kernel with a different name
 +#pkgbase=linux               # Build stock -ARCH kernel
 +pkgbase=linux-15khz          # Build kernel with a different name
- _srcver=5.0.5-arch1
+ _srcver=5.0.6-arch1
  pkgver=${_srcver//-/.}
  pkgrel=1
 @@ -13,23 +13,25 @@
