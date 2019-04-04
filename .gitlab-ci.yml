@@ -29,7 +29,7 @@ create_packages:
     - cat /proc/cpuinfo
     - ln -s /work work
     - su - build -c "cd /work && ./buildContainer.sh"
-    - pwd && ls -l
+    - pwd && ls -l && ls -l work
   cache:
     key: one-key-to-rule-them-all
     paths:
