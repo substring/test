@@ -27,11 +27,10 @@ create_packages:
     - echo 'build ALL=(root) NOPASSWD:ALL' > /etc/sudoers.d/user && chmod 0440 /etc/sudoers.d/user
     - chown -R build:build work /work
     - chmod -R 777 work /work
-    - ls -l work work/cache / /work
     - CCACHE_DIR=/work/cache/ccache ccache -s
     - cat /proc/cpuinfo
     - su - build -c "cd /work && ./buildContainer.sh"
-    - pwd && ls -l && ls work
+    - CCACHE_DIR=/work/cache/ccache ccache -s
   cache:
     key: one-key-to-rule-them-all
     paths:
