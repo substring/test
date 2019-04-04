@@ -26,6 +26,7 @@ create_packages:
     - cp packages_*.lst buildContainer.sh /work
     - cp -R package /work
     - chown -R build:build work /work
+    - ls -l work work/cache
     - CCACHE_DIR=/work/cache/ccache ccache -s
     - cat /proc/cpuinfo
     - su - build -c "cd /work && ./buildContainer.sh"
