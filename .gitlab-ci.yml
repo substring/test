@@ -21,13 +21,13 @@ create_packages:
   script:
     - useradd -ms /bin/bash -d /work build
     - echo 'build ALL=(root) NOPASSWD:ALL' > /etc/sudoers.d/user && chmod 0440 /etc/sudoers.d/user
-    - mkdir -p /work/cache/ccache
+    - mkdir -p work/cache/ccache
+    - ln -s "$(pwd)"/work /work
     - cp packages_*.lst buildContainer.sh /work
     - cp -R package /work
-    - chown -R build:build /work
+    - chown -R build:build work /work
     - CCACHE_DIR=/work/cache/ccache ccache -s
     - cat /proc/cpuinfo
-    - ln -s /work work
     - su - build -c "cd /work && ./buildContainer.sh"
     - pwd && ls -l && ls work
   cache:
