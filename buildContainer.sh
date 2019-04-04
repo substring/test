@@ -54,6 +54,7 @@ sudo pacman -Sy
 # Should be more dynamic
 #~ for package in linux mame; do
 while read package ; do
+  echo $package | grep -q "^#" && continue
   cd /work
   asp update $package
   asp checkout $package
@@ -62,6 +63,7 @@ done < /work/packages_arch.lst
 
 # AUR packages
 while read package ; do
+  echo $package | grep -q "^#" && continue
   cd /work
   wget https://aur.archlinux.org/cgit/aur.git/snapshot/${package}.tar.gz
   tar xvzf ${package}.tar.gz
