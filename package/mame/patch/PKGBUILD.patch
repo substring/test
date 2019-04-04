@@ -65,7 +65,7 @@ index 0a8780d52b1..42ab3bd637e 100644
  
    # Install the binaries
 -  install -Dm755 mame64 "$pkgdir"/usr/lib/mame/mame
-+  install -Dm755 mametiny64 "$pkgdir"/usr/lib/mame/mame
++  install -Dm755 mamearcade64 "$pkgdir"/usr/lib/mame/mame
    for _i in castool chdman imgtool jedutil nltool nlwav pngcmp regrep romcmp src2html \
              split srcclean ldverify ldresample; do
      install -m755 $_i -t "$pkgdir"/usr/lib/mame
