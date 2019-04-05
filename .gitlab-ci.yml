@@ -38,7 +38,7 @@ create_packages:
   artifacts:
     paths:
       - work/output
-    expire_in: 3 mos
+    expire_in: 1 mos
 
 build_groovyarcade_iso:
   stage: build_iso
@@ -49,12 +49,12 @@ build_groovyarcade_iso:
     - ./buildGA.sh
   artifacts:
     paths:
-      - work/output/*.iso
+      - work/output
     expire_in: 3 mos
 
 release_github:
   stage: release
   script:
     - echo "Releasing GroovyArcade"
-    - pacman -Sy --noconfirm --needed tar
+    - pacman -Sy --noconfirm --needed tar xz
     - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
