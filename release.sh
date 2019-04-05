@@ -24,7 +24,7 @@ $ghr release \
     --description "automatic build" \
     --pre-release
 
-cat packages_aur.lst packages_local.lst | while read pkg ; do
+cat packages_aur.lst packages_local.lst | grep -v "^#" | while read pkg ; do
   for file in `ls work/output/$pkg*.pkg.tar.xz` ; do
     filename=`basename $file`
     echo "Uploading $filename ..."
