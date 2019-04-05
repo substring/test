@@ -49,7 +49,7 @@ build_groovyarcade_iso:
     - ./buildGA.sh
   artifacts:
     paths:
-      - work/output
+      - work/output/*.iso.gz
     expire_in: 3 mos
 
 release_github:

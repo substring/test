@@ -199,11 +199,21 @@ xorriso -as mkisofs \
   "$GA_ISO_PATH"
   #-full-iso9660-filenames \
 
+#
+# Compress the iso
+#
+log "xz-ing the iso..."
+xz -v -T 0 "$GA_ISO_FILE"
+
+#
 # Cleaning
+#
 log "Cleaning"
 mv "$SFS_PATH"/etc/resolv.conf.original "$SFS_PATH"/etc/resolv.conf
 rm -rf "$SFS_PATH" "$GA_ISO_PATH" "$EFI_PATH"
 
+#
 # Tadaaaaa
+#
 log "Finished!"
 exit 0
