@@ -203,7 +203,7 @@ xorriso -as mkisofs \
 # Compress the iso
 #
 log "xz-ing the iso..."
-xz -v -T 0 "$GA_ISO_FILE"
+xz -v9T0 "$GA_ISO_FILE"
 
 #
 # Cleaning
