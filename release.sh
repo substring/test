@@ -4,7 +4,7 @@ export GITHUB_USER=substring
 export GITHUB_REPO=test
 tag=2019-03
 release_name="GroovyArcade $tag"
-ghr=~/go/bin/github-release
+ghr=`[[ -f ~/go/bin/github-release ]] && echo "~/go/bin/github-release" || echo "/usr/local/bin/github-release"`
 ghr_opts="--tag '$tag'"
 
 # Create the repo db
