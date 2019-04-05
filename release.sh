@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export GITHUB_TOKEN=`cat ~/git/GroovyArcade/GAbuild/GITHUB_TOKEN`
 export GITHUB_USER=substring
 export GITHUB_REPO=test
 tag=2019-03
@@ -15,6 +14,8 @@ ghr_opts="--tag '$tag'"
 # Comment this for now
 # The rev-parse is to be sure we are in a real git repo
 #git rev-parse --is-inside-work-tree && git tag "$tag" && git push --tags
+
+ls work/output/
 
 # Create a release
 $ghr release \
