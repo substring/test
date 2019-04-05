@@ -1,11 +1,16 @@
+# #!/bin/bash
+
 # GROOVYARCADE details
 GA_VERSION=test
+if [[ ! -z ${CI_COMMIT_TAG} ]] ; then
+  GA_VERSION=${CI_COMMIT_TAG}
+elif [[ ! -z ${CI_COMMIT_SHORT_SHA} ]] ; then
+  GA_VERSION=${CI_COMMIT_SHORT_SHA}
+fi
 
 # ARCHLINUX version
-ARCH_VERSION=2019.03.01
-ARCH_URL=http://archlinux.mirrors.benatherton.com
+ARCH_VERSION=2019.04.01
 ARCH_URL=http://archlinux.mirrors.ovh.net/archlinux
-ARCH_SHA1=e32acb5a7b7cfb2bdba10697cce48ab69e13c186
 
 # MAME version
 MAME_VERSION=0208
