@@ -44,7 +44,8 @@ build_groovyarcade_iso:
   stage: build_iso
   script:
     - echo "Building iso"
-    - pacman -Sy --noconfirm --needed archiso mkinitcpio cdrtools asp wget
+    - pacman -Sy --noconfirm --needed archiso mkinitcpio cdrtools wget
+    - whoami
     - sudo ./buildGA.sh
 
 release_github:
