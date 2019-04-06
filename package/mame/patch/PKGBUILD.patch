@@ -22,11 +22,11 @@ index 0a8780d52b1..42ab3bd637e 100644
  conflicts=(sdlmame)
  replaces=(sdlmame)
 -source=("https://github.com/mamedev/mame/archive/mame${pkgver/./}.tar.gz" mame.sh)
-+source=("https://github.com/mamedev/mame/archive/mame${_mamever}.tar.gz" mame.sh 0207_groovymame_017n.diff)
++source=("https://github.com/mamedev/mame/archive/mame${_mamever}.tar.gz" mame.sh 0208_groovymame_017n.diff)
  sha256sums=('d02dba8e144ac11878226ef48aa8e4d30a33d77dd72210f84e9803908c70e8b2'
 -            'da37e17b53759f049234af393bc69c29e1e4aab58df44a9384e7f7160a49db29')
 +            'da37e17b53759f049234af393bc69c29e1e4aab58df44a9384e7f7160a49db29'
-+            'cd1937e551ea34141a0720fcc0bef4531d195bdae37ab4f5e9c5386ba98cd62b')
++            'caf50d685458a2b9c96d96f7bbe38c79cdc7878d8e22864ce81fe2514feadea5')
  
  
  prepare() {
