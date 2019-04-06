@@ -38,7 +38,7 @@ index 0a8780d52b1..42ab3bd637e 100644
    sed -e 's|\# USE_SYSTEM_LIB|USE_SYSTEM_LIB|g' -i makefile
 +  # Apply GroovyMAME patch
 +  msg2 "Apply groovymame patch..."
-+  patch -p0 --binary -i "${srcdir}/0207_groovymame_017n.diff"
++  patch -p0 --binary -i "${srcdir}/0208_groovymame_017n.diff"
  }
  
  build() {
