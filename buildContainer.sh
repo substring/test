@@ -10,7 +10,7 @@ get_srcinfo_value() {
 clean_previous_versions() {
   pkgname=$1
   arch="x86_64" #let's hardcode this for now
-  pkgver=`grep "^pkgver" ${-output}/$package/.SRCINFO} | cut -d '=' -f 2`
+  pkgver=`grep "^pkgver" ${_output}/$package/.SRCINFO} | cut -d '=' -f 2`
 }
 
 do_the_job() {
@@ -54,6 +54,7 @@ sudo pacman -Sy
 # Should be more dynamic
 #~ for package in linux mame; do
 while read package ; do
+  echo "$package"
   echo $package | grep -q "^#" && continue
   cd /work
   asp update $package
