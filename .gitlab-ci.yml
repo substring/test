@@ -29,7 +29,7 @@ create_packages:
     - chmod -R 777 work /work
     - CCACHE_DIR=/work/cache/ccache ccache -s
     - cat /proc/cpuinfo
-    - su - build -c "cd /work && ./buildContainer.sh"
+    - su - build -c "cd /work && ./buildContainer.sh" | tee work/output/build.log
     - CCACHE_DIR=/work/cache/ccache ccache -s
   cache:
     key: one-key-to-rule-them-all
