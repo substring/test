@@ -19,7 +19,7 @@ create_packages:
     - pacman -Sy --noconfirm --needed mkinitcpio asp base-devel ccache haveged namcap wget
     - sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
     - sed -ri 's/^BUILDENV=(.*)\!ccache(.*)/BUILDENV=\1ccache\2/' /etc/makepkg.conf
-    - mkdir -p work/cache/ccache
+    - mkdir -p work/cache/ccache work/output
     - ln -s "$(pwd)"/work /work
     - cp packages_*.lst buildContainer.sh /work
     - cp -R package /work
