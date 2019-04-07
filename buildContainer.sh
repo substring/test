@@ -51,7 +51,6 @@ do_the_job() {
 sudo pacman -Sy
 
 # Native arch packages
-cat /work/packages_arch.lst
 while read package ; do
   echo $package | grep -q "^#" && continue
   cd /work
