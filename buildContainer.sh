@@ -27,7 +27,7 @@ do_the_job() {
   # Handle community/AUR package
   [[ -d "/work/$package/trunk" ]] && cd "/work/$package/trunk" || cd "/work/$package"
   
-  PKGDEST=/work/output makepkg --syncdeps --noconfirm --skippgpcheck
+  PKGDEST=/work/output makepkg --syncdeps --noconfirm --skippgpcheck --nobuild
   
   # rc=13 if the package was already built -> skip that error
   rc=$?
@@ -51,10 +51,8 @@ do_the_job() {
 sudo pacman -Sy
 
 # Native arch packages
-# Should be more dynamic
-#~ for package in linux mame; do
+cat /work/packages_arch.lst
 while read package ; do
-  echo "$package"
   echo $package | grep -q "^#" && continue
   cd /work
   asp update $package
