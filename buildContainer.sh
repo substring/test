@@ -27,7 +27,7 @@ do_the_job() {
   # Handle community/AUR package
   [[ -d "/work/$package/trunk" ]] && cd "/work/$package/trunk" || cd "/work/$package"
   
-  PKGDEST=/work/output makepkg --syncdeps --noconfirm --skippgpcheck --nobuild
+  PKGDEST=/work/output makepkg --syncdeps --noconfirm --skippgpcheck
   
   # rc=13 if the package was already built -> skip that error
   rc=$?
