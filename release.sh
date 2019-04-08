@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source settings
+
 _iso=groovyarcade_${GA_VERSION}.iso
 tag=${GA_VERSION}
 
