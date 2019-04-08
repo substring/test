@@ -13,16 +13,6 @@ release_name="GroovyArcade $tag"
 ghr=`[[ -f ~/go/bin/github-release ]] && echo "~/go/bin/github-release" || echo "/usr/local/bin/github-release"`
 ghr_opts="--tag '$tag'"
 
-# Create the repo db
-#repo-add groovyarcade.db.tar.gz <PACKAGES>
-
-# Create a release tag and push it
-# Comment this for now
-# The rev-parse is to be sure we are in a real git repo
-#git rev-parse --is-inside-work-tree && git tag "$tag" && git push --tags
-
-ls work/output/
-
 # Create a release
 $ghr release \
     --tag "$tag" \
@@ -46,7 +36,7 @@ done
 $ghr upload \
     --tag "$tag" \
     --name "$_iso" \
-    --file "$OUTPUT/$_iso"
+    --file "work/output/$_iso"
 
 # Make the release definitive
 $ghr edit \
