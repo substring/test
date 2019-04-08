@@ -35,8 +35,8 @@ done
 # Upload the iso
 $ghr upload \
     --tag "$tag" \
-    --name "$_iso" \
-    --file "work/output/$_iso"
+    --name "${_iso}.xz" \
+    --file "work/output/${_iso}.xz"
 
 # Make the release definitive
 $ghr edit \
