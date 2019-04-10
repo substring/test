@@ -11,6 +11,3 @@ fi
 # ARCHLINUX version
 ARCH_VERSION=2019.04.01
 ARCH_URL=http://archlinux.mirrors.ovh.net/archlinux
-
-# MAME version
-MAME_VERSION=0208
