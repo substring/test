@@ -1,24 +1,8 @@
---- linux/trunk/PKGBUILD        2019-03-13 14:24:04.271738743 +0000
-+++ linux-15khz/trunk/PKGBUILD  2019-03-13 14:20:43.529230615 +0000
-@@ -2,8 +2,8 @@
- # Maintainer: Tobias Powalowski <tpowa@archlinux.org>
- # Maintainer: Thomas Baechler <thomas@archlinux.org>
- 
--pkgbase=linux               # Build stock -ARCH kernel
--#pkgbase=linux-custom       # Build kernel with a different name
-+#pkgbase=linux               # Build stock -ARCH kernel
-+pkgbase=linux-15khz          # Build kernel with a different name
- _srcver=5.0.7-arch1
- pkgver=${_srcver//-/.}
- pkgrel=1
-@@ -13,23 +13,25 @@
- makedepends=(xmlto kmod inetutils bc libelf git python-sphinx graphviz)
- options=('!strip')
- _srcname=archlinux-linux
-+_15kpatchcommitid=81ec4f56aa0ee059467186bff9ebf1b7dde69d0c
- source=(
-   "$_srcname::git+https://git.archlinux.org/linux.git?signed#tag=v$_srcver"
-   config         # the main kernel config file
+diff --git a/linux/trunk/PKGBUILD b/linux/trunk/PKGBUILD
+index 1895ca0c88e..fc486182337 100644
+--- a/linux/trunk/PKGBUILD
++++ b/linux/trunk/PKGBUILD
+@@ -19,6 +19,11 @@ source=(
    60-linux.hook  # pacman hook for depmod
    90-linux.hook  # pacman hook for initramfs regeneration
    linux.preset   # standard config files for mkinitcpio ramdisk
@@ -30,19 +14,21 @@
  )
  validpgpkeys=(
    'ABAF11C65A2970B130ABE3C479BE3E4300411886'  # Linus Torvalds
-   '647F28654894E3BD457199BE38DBBDC86092693E'  # Greg Kroah-Hartman
-   '8218F88849AAC522E94CF470A5E9288C4FA415FA'  # Jan Alexander Steffens (heftig)
- )
--sha256sums=('SKIP'
--            'df2ce998b050c707950c555f7f6ec0efcb8498fca10b4bce45f681844c8aa0ab'
--            'ae2e95db94ef7176207c690224169594d49445e04249d2499e9d2fbc117a0b21'
--            'c043f3033bb781e2688794a59f6d1f7ed49ef9b13eb77ff9a425df33a244a636'
+@@ -29,7 +34,12 @@ sha256sums=('SKIP'
+             'fdb355884faa86a2f9725d09657c9c32573b0f1e8bb31416823d1198bcb2f80d'
+             'ae2e95db94ef7176207c690224169594d49445e04249d2499e9d2fbc117a0b21'
+             'c043f3033bb781e2688794a59f6d1f7ed49ef9b13eb77ff9a425df33a244a636'
 -            'ad6344badc91ad0630caacde83f7f9b97276f80d26a20619a87952be65492c65')
-+
++            'ad6344badc91ad0630caacde83f7f9b97276f80d26a20619a87952be65492c65'
++            '1cf8ddffe41e7d136767019829e11fd7732521f97f1b94f6e1e057c6f69941d8'
++            'dd09c89c7d7981b8d383d6366d98a23868e66feb9c3fc2de823a3646dda4a7a9'
++            '79a82e6653802b81514b8377565bf712295751157a43c11b0e0aa4d6b6bf4fe0'
++            '6bdf73fd06748edf9ccbef75b24c9cc078f50583509d23626c709ade2198b118'
++            '13cbd363fc82c76ef6b7a8a339d8d7018508fdb8ef22235c9324b6d4f90c7f1b')
  
  _kernelname=${pkgbase#linux}
  : ${_kernelname:=-ARCH}
-@@ -46,7 +48,7 @@
+@@ -46,7 +56,7 @@ prepare() {
    for src in "${source[@]}"; do
      src="${src%%::*}"
      src="${src##*/}"
@@ -51,17 +37,3 @@
      msg2 "Applying patch $src..."
      patch -Np1 < "../$src"
    done
-@@ -241,3 +243,13 @@
- done
- 
- # vim:set ts=8 sts=2 sw=2 et:
-+md5sums=('SKIP'
-+         'cd7a294e89c227f69023e311d5198b9d'
-+         'ce6c81ad1ad1f8b333fd6077d47abdaf'
-+         'b448c99f0ea9aaee9b13784958a98fd0'
-+         'a329f9581060d555dc7358483de9760a'
-+         '1e44465f608476a011fd29a7f713b7fc'
-+         '30679c2a48459ae666cb64c6dfb0944a'
-+         '5b1e52ef17febc6953813607d99b52ff'
-+         '8bc9b9658e9d39b5ad30df45690c8256'
-+         '96ca9d01e805616a44cc6ea45114f7a7')
