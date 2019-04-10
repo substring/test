@@ -16,7 +16,7 @@ before_script:
 create_packages:
   stage: makepkg
   script:
-    - pacman -Sy --noconfirm --needed mkinitcpio asp base-devel ccache haveged namcap wget
+    - pacman -Sy --noconfirm --needed mkinitcpio asp base-devel ccache haveged namcap wget sed
     - sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
     - sed -ri 's/^BUILDENV=(.*)\!ccache(.*)/BUILDENV=\1ccache\2/' /etc/makepkg.conf
     - mkdir -p work/cache/ccache work/output
@@ -29,7 +29,7 @@ create_packages:
     - chmod -R 777 work /work
     - CCACHE_DIR=/work/cache/ccache ccache -s
     - cat /proc/cpuinfo
-    - su - build -c "cd /work && ./buildContainer.sh" | tee work/output/build.log
+    - su - build -c "cd /work && ./buildContainer.sh" 2>&1 | tee work/output/build.log
     - CCACHE_DIR=/work/cache/ccache ccache -s
   cache:
     key: one-key-to-rule-them-all
