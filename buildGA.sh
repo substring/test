@@ -54,10 +54,8 @@ check_downloads $sha1name || die 1 "ISO didn't match checksum. Aborting"
 #
 # Mount the iso
 #
-log "Mounting the $isoname ARCH DVD and copying its content to $GA_ISO_PATH"
-mount -r -t iso9660 -o loop "$CACHE/$isoname" "$ARCH_ISO_PATH"
-cp -a "$ARCH_ISO_PATH" "$GA_ISO_PATH"
-umount "$ARCH_ISO_PATH"
+log "Extracting $isoname ARCH DVD to $GA_ISO_PATH"
+xorriso -osirrox on -indev "$CACHE/$isoname" -extract / "$GA_ISO_PATH"
 
 
 #
