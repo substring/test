@@ -26,7 +26,8 @@ before_script:
     - chmod -R 777 work /work
     - CCACHE_DIR=/work/cache/ccache ccache -s
     - cat /proc/cpuinfo
-    - su - build -c "cd /work && ./buildContainer.sh" 2>&1 | tee work/output/build.log
+    - echo $MAKEPKG_OPTS
+    - su - build -c "cd /work && MAKEPKG_OPTS=$MAKEPKG_OPTS ./buildContainer.sh" 2>&1 | tee work/output/build.log
     - CCACHE_DIR=/work/cache/ccache ccache -s
   cache:
     key: one-key-to-rule-them-all
