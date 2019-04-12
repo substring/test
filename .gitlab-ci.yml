@@ -13,7 +13,7 @@ before_script:
 
 .build_packages_template: &buildpackages
   script:
-    - pacman -Sy --noconfirm --needed mkinitcpio asp base-devel ccache haveged namcap wget sed
+    - pacman -Sy --noconfirm --needed mkinitcpio asp base-devel ccache haveged namcap wget sed python-sphinx_rtd_theme
     - sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
     - sed -ri 's/^BUILDENV=(.*)\!ccache(.*)/BUILDENV=\1ccache\2/' /etc/makepkg.conf
     - mkdir -p work/cache/ccache work/output
