@@ -1,7 +1,7 @@
 #!/bin/bash
 _output=/work/output
 export CCACHE_DIR=/work/cache/ccache
-
+built_packages=/work/output/built_packages
 
 get_srcinfo_value() {
   grep "^$2" "${_output}/$1/.SRCINFO"
@@ -27,9 +27,13 @@ do_the_job() {
   # Handle community/AUR package
   [[ -d "/work/$package/trunk" ]] && cd "/work/$package/trunk" || cd "/work/$package"
   
-  PKGDEST=/work/output makepkg --syncdeps --noconfirm --skippgpcheck
+  # The CI can set MAKEPKG_OPTS to "--nobuild --nodeps" for a simple basic check for every branch not tag nor master)
+  # So if empty, set some default value
+  export MAKEPKG_OPTS=${MAKEPKG_OPTS:-"--syncdeps"}
+  PKGDEST=/work/output makepkg --noconfirm --skippgpcheck $MAKEPKG_OPTS
   
   # rc=13 if the package was already built -> skip that error
+  # This only happens in a local build
   rc=$?
   if [[ $rc != 0 && $rc != 13 ]] ; then
     echo "rc= $rc"
@@ -42,6 +46,7 @@ do_the_job() {
   mkdir -p "/work/output/${package}"
   makepkg --printsrcinfo > "/work/output/${package}/".SRCINFO
   cp PKGBUILD "/work/output/${package}"
+  makepkg --packagelist >> "$built_packages"
   
   # use the SRCINFO to find the current version and purge previous versions of the package
   echo
@@ -49,6 +54,8 @@ do_the_job() {
 
 # Need to update, that's arch philosophy. The db from the image build can be outdated
 sudo pacman -Sy
+
+rm $built_packages 2>/dev/null
 
 # Native arch packages
 while read package ; do
@@ -72,6 +79,3 @@ done < /work/packages_aur.lst
 #for pack in `ls /work/output/*.pkg.tar.xz ` ; do
 #  namcap -i "$pack"
 #done
-
-# Build repo
-repo-add ${_output}/groovyarcade.db.tar.gz ${_output}/*.pkg.tar.xz

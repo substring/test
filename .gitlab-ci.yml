@@ -1,20 +1,17 @@
 image: archlinux/base:latest
 
 stages:
+  - prechecks
   - makepkg
   - build_iso
   - release
-
-
 
 before_script:
   - pacman-key --init && \
     pacman-key --populate archlinux && \
     pacman -Sy
-  
 
-create_packages:
-  stage: makepkg
+.build_packages_template: &buildpackages
   script:
     - pacman -Sy --noconfirm --needed mkinitcpio asp base-devel ccache haveged namcap wget sed
     - sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
@@ -28,8 +25,7 @@ create_packages:
     - chown -R build:build work /work
     - chmod -R 777 work /work
     - CCACHE_DIR=/work/cache/ccache ccache -s
-    - cat /proc/cpuinfo
-    - su - build -c "cd /work && ./buildContainer.sh" 2>&1 | tee work/output/build.log
+    - su - build -c "cd /work && MAKEPKG_OPTS=\"$MAKEPKG_OPTS\" ./buildContainer.sh" 2>&1 | tee work/output/build.log
     - CCACHE_DIR=/work/cache/ccache ccache -s
   cache:
     key: one-key-to-rule-them-all
@@ -40,7 +36,7 @@ create_packages:
       - work/output
     expire_in: 1 mos
 
-build_groovyarcade_iso:
+.build_groovyarcade_iso_template: &buildgroovyarcadeiso
   stage: build_iso
   script:
     - echo "Building iso"
@@ -50,7 +46,45 @@ build_groovyarcade_iso:
   artifacts:
     paths:
       - work/output/*.iso.xz
-    expire_in: 3 mos
+    expire_in: 1 mos
+
+.branches_but_master: &notmaster
+  when: manual
+  only:
+    - branches
+  except:
+    - master
+
+.only_master: &onlymasterortags
+  only:
+    - master
+    - tags
+
+basic_checks:
+  stage: prechecks
+  <<: *notmaster
+  variables:
+    MAKEPKG_OPTS: "--nobuild --nodeps"
+  <<: *buildpackages
+  when: always
+
+build_packages_manual:
+  stage: makepkg
+  <<: *notmaster
+  <<: *buildpackages
+
+build_iso_manual:
+  <<: *notmaster
+  <<: *buildgroovyarcadeiso
+
+build_packages:
+  stage: makepkg
+  <<: *onlymasterortags
+  <<: *buildpackages
+
+build_iso:
+  <<: *onlymasterortags
+  <<: *buildgroovyarcadeiso
 
 release_github:
   stage: release
@@ -59,3 +93,5 @@ release_github:
     - pacman -Sy --noconfirm --needed tar xz grep
     - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
     - ./release.sh
+  only:
+    - tags

@@ -15,10 +15,16 @@ cancel_and_exit() {
   exit 1
 }
 
+#
+# Build repo
+#
+echo "Preparing the AUR repo"
+repo-add ${_output}/groovyarcade.db.tar.gz ${_output}/*.pkg.tar.xz
+
 echo "Getting ready for release $tag"
 
 # Make sure all env vars exist
-export GITHUB_TOKEN=${GITHUB_TOKEN-`cat ./GITHUB_TOKEN`}
+export GITHUB_TOKEN=${GITHUB_TOKEN:-`cat ./GITHUB_TOKEN`}
 [[ -z $GITHUB_USER ]] && (echo "GITHUB_USER is undefined, cancelling." ; exit 1 ;)
 [[ -z $GITHUB_REPO ]] && (echo "GITHUB_REPO is undefined, cancelling." ; exit 1 ;)
 # Allow a local build to release, the CI sets the GITHUB_TOKEN env var
