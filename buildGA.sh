@@ -94,13 +94,17 @@ killall gpg-agent
 EOF
 
 #
-# Patch and build kernel
+# Install self compiled packages
 #
-
-
-#
-# Patch and build MAME, or just download a pre-compiled
-#
+#First build the package list
+pacman_packages_list=
+while read package ; do
+  pacman_packages_list="$pacman_packages_list /work/`basename "$package"`"
+done < "$OUTPUT/built_packages"
+log "Installing custom packages $pacman_packages_list"
+cat << EOF | chroot "$SFS_PATH"
+pacman -U --noconfirm $pacman_packages_list
+EOF
 
 #
 # Install arch packages
@@ -115,16 +119,6 @@ packages=`cat packages_native.lst | tr '\n' ' '`
 cat << EOCHR | chroot "$SFS_PATH"
 pacman -S --noconfirm --needed $packages
 EOCHR
-
-#
-# Install self compiled packages
-#
-log "Installing custom packages"
-cat << EOF | chroot "$SFS_PATH"
-pacman -U --noconfirm /work/groovymame-0.208-1-x86_64.pkg.tar.xz
-pacman -U --noconfirm /work/attract-2.5.1-1-x86_64.pkg.tar.xz
-pacman -U --noconfirm /work/advancemame-3.9-1-x86_64.pkg.tar.xz
-EOF
 
 #
 # umount bind mountpoints before rebuilding the iso
