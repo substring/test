@@ -70,7 +70,7 @@ unsquashfs -d "$SFS_PATH" "$GA_ISO_PATH"/arch/x86_64/airootfs.sfs || die 3 "Coul
 #
 log "Preparing chroot environment"
 # Share mount point
-mkdir -p "$SFS_PATH"/work
+mkdir -p "$SFS_PATH"/work "$SFS_PATH"/overlay
 mount --bind ./work/output "$SFS_PATH"/work
 ( cd "$SFS_PATH" &&
 mount -t proc /proc proc/ &&
@@ -102,14 +102,14 @@ while read package ; do
   pacman_packages_list="$pacman_packages_list /work/`basename "$package"`"
 done < "$OUTPUT/built_packages"
 log "Installing custom packages $pacman_packages_list"
-cat << EOF | chroot "$SFS_PATH"
+cat << EOCHR | chroot "$SFS_PATH"
 pacman -U --noconfirm $pacman_packages_list
-EOF
+EOCHR
 
 #
 # Install arch packages
 #
-log "Install Arch linux genuine packages"
+log "Installing Arch linux genuine packages"
 packages=`cat packages_native.lst | tr '\n' ' '`
 #cat << EOF | chroot "$SFS_PATH"
 #for pck in $packages ; do
@@ -121,15 +121,28 @@ pacman -S --noconfirm --needed $packages
 EOCHR
 
 #
+# Apply the overlay
+#
+log "Applying the overlay"
+# Change owner + rights on the mounted overlay fs
+cp -R overlay "$WORK"
+mount --bind ./work/overlay "$SFS_PATH"/overlay
+# chown root:root
+cat << EOCHR | chroot "$SFS_PATH"
+cp -R /overlay/* /
+EOCHR
+
+#
 # umount bind mountpoints before rebuilding the iso
 #
-log "Unmount bind mounts"
+log "Unmounting bind mounts"
 # those umounts can sometimes be tricky, umount can report that the target is still busy
 #grep archsquash /proc/mounts | cut -f2 -d" " | sort -r| sudo xargs umount -fRnv
 umount "$SFS_PATH"/proc
 umount "$SFS_PATH"/dev
 umount "$SFS_PATH"/sys
 umount "$SFS_PATH"/work
+umount "$SFS_PATH"/overlay
 
 #
 # Rebuild squashfs
