@@ -1,6 +1,7 @@
 image: archlinux/base:latest
 
 stages:
+  - lint
   - prechecks
   - makepkg
   - build_iso
@@ -59,6 +60,14 @@ before_script:
   only:
     - master
     - tags
+
+bash_lint:
+  stage: lint
+  allow_failure: true
+  <<: *notmaster
+  script:
+    - paxman -S shellcheck
+    - find ./ -name "*.sh" -exec shellcheck -x {}\;
 
 basic_checks:
   stage: prechecks
