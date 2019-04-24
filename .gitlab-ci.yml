@@ -66,7 +66,7 @@ bash_lint:
   allow_failure: true
   <<: *notmaster
   script:
-    - pacman -S shellcheck
+    - pacman -Sy --noconfirm shellcheck
     - find ./ -name "*.sh" -exec shellcheck -x {}\;
 
 basic_checks:
