@@ -64,10 +64,11 @@ before_script:
 bash_lint:
   stage: lint
   allow_failure: true
+  when: always
   <<: *notmaster
   script:
     - pacman -Sy --noconfirm shellcheck
-    - find ./ -name "*.sh" -exec shellcheck -x {}\;
+    - find ./ -name "*.sh" -exec shellcheck -x {} \;
 
 basic_checks:
   stage: prechecks
