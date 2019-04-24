@@ -68,7 +68,8 @@ bash_lint:
   when: always
   script:
     - pacman -Sy --noconfirm glibc shellcheck
-    - rc=0 ; for file in $(ls -r *.sh) ; do shellcheck -x "$file" ; rcsc=$? ; rc=${rc/0/$rcsc} ; done
+    - rc=0
+    - for file in *.sh ; do shellcheck -x "$file" ; rcsc=$? ; rc=${rc/0/$rcsc} ; done
     - return $rc
 
 basic_checks:
