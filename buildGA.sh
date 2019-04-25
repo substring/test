@@ -65,8 +65,8 @@ fi
 check_downloads $sha1name || die 1 "ISO didn't match checksum. Aborting"
 
 # If REPACK_GA is set, don't fool around with arch iso, but just the groovy arcade iso
-[[ ! -z $REPACK_GA ]] && isoname=."./output/groovyarcade_${GA_VERSION}.iso"
-[[ ! -z $REPACK_GA ]] && [[ ! -f $CACHE/$isoname ]] && exit 1
+[[ -n $REPACK_GA ]] && isoname=."./output/groovyarcade_${GA_VERSION}.iso"
+[[ -n $REPACK_GA ]] && [[ ! -f $CACHE/$isoname ]] && exit 1
 
 #
 # Mount the iso
