@@ -1,37 +1,51 @@
 #!/bin/bash
 
+#
+# Must be run as root
+#
+[ "$EUID" -ne 0 ] && die 1 "This script must be run as root"
+
+
+#
 # Setup logs
+#
 mkdir -p ./logs
-[[ -z $LOGFILE ]] && LOGFILE=./logs/"`basename $0 .sh`.log"
+[[ -z $LOGFILE ]] && LOGFILE=./logs/"$(basename "$0" .sh)".log
 #exec &> >(tee -a "$LOGFILE")
 exec &> >(tee "$LOGFILE")
 
+
+#
 # Create the required dirs
+#
 [[ -z $WORK ]] && WORK=./work
 CACHE="$WORK/cache"
 ARCH_ISO_PATH="$WORK/archiso"
 GA_ISO_PATH="$WORK/ga_iso" # Created when copying the files from the DVD
 SFS_PATH="$WORK/archsquash" # Created by the unsquashfs command below
-EFI_PATH="$WORK/efi"
-OUTPUT="$WORK/output"
+EFI_PATH="$WORK/efi"        # Holds EFI data for the DVD
+OUTPUT="$WORK/output"       # GA packages
+GA_OVERLAY="$WORK/overlay/groovyarcade"
+ISO_OVERLAY="$WORK/overlay/iso"
+
 mkdir -p "$WORK" "$CACHE" "$ARCH_ISO_PATH" "$OUTPUT" "$EFI_PATH"
 
 
+#
 # Get the general settings
+#
 source settings
 source include.sh
 
+
 GA_ISO_FILE="$OUTPUT/groovyarcade_${GA_VERSION}.iso"
-rm $GA_ISO_FILE
+[[ -z $REPACK_GA ]] && rm "$GA_ISO_FILE"
+
 
 check_downloads() {
-  (cd "$CACHE" && sha1sum -c $1)
+  (cd "$CACHE" && sha1sum -c "$1")
   return $?
 }
-
-# Must be run as root
-[ "$EUID" -ne 0 ] && die 1 "This script must be run as root"
-
 
 #
 # Download
@@ -50,6 +64,9 @@ fi
 
 check_downloads $sha1name || die 1 "ISO didn't match checksum. Aborting"
 
+# If REPACK_GA is set, don't fool around with arch iso, but just the groovy arcade iso
+[[ ! -z $REPACK_GA ]] && isoname=."./output/groovyarcade_${GA_VERSION}.iso"
+[[ ! -z $REPACK_GA ]] && [[ ! -f $CACHE/$isoname ]] && exit 1
 
 #
 # Mount the iso
@@ -86,7 +103,7 @@ cp /etc/resolv.conf "$SFS_PATH"/etc/resolv.conf
 #
 log "Setting up pacman"
 # Now get pacman ready
-cat << EOF | chroot "$SFS_PATH"
+[[ -z $SKIP_PACKAGES ]] && cat << EOF | chroot "$SFS_PATH"
 pacman-key --init
 pacman-key --populate archlinux
 killall gpg-agent
@@ -95,44 +112,88 @@ reflector --verbose --latest 50 --sort rate --save /etc/pacman.d/mirrorlist
 pacman -Syu --noconfirm
 EOF
 
+
 #
 # Install self compiled packages
 #
 #First build the package list
 pacman_packages_list=
-while read package ; do
-  pacman_packages_list="$pacman_packages_list /work/`basename "$package"`"
+while read -r package ; do
+  pacman_packages_list="$pacman_packages_list /work/$(basename "$package")"
 done < "$OUTPUT/built_packages"
 log "Installing custom packages $pacman_packages_list"
-cat << EOCHR | chroot "$SFS_PATH"
-pacman -U --noconfirm $pacman_packages_list
+[[ -z $SKIP_PACKAGES ]] && cat << EOCHR | chroot "$SFS_PATH"
+pacman -U --needed --noconfirm $pacman_packages_list
 EOCHR
+
 
 #
 # Install arch packages
 #
 log "Installing Arch linux genuine packages"
-packages=`cat packages_native.lst | tr '\n' ' '`
+packages=$(tr '\n' ' ' < packages_native.lst)
 #cat << EOF | chroot "$SFS_PATH"
 #for pck in $packages ; do
 #pacman -S --noconfirm \$pck
 #done
 #EOF
-cat << EOCHR | chroot "$SFS_PATH"
+[[ -z $SKIP_PACKAGES ]] && cat << EOCHR | chroot "$SFS_PATH"
 pacman -S --noconfirm --needed $packages
 EOCHR
+
+
+#
+# Add arcade user
+#
+cat << EOCHR | chroot "$SFS_PATH"
+groupadd --gid 1000 arcade
+useradd --uid 1000 --gid 1000 --create-home --home-dir /home/arcade --shell /bin/bash --groups adm,audio,disk,games,log,network,nobody,optical,power,storage,tty,users,video,wheel arcade
+echo -e "arcade\narcade" | passwd arcade
+sed -i "/^# .*wheel.*NOPASSWD.*/s/^# //" /etc/sudoers
+EOCHR
+
 
 #
 # Apply the overlay
 #
-log "Applying the overlay"
+log "Applying the groovy arcade overlay + set expected permissions"
 # Change owner + rights on the mounted overlay fs
 cp -R overlay "$WORK"
-mount --bind ./work/overlay "$SFS_PATH"/overlay
+mount --bind "$GA_OVERLAY" "$SFS_PATH"/overlay
 # chown root:root
 cat << EOCHR | chroot "$SFS_PATH"
-cp -R /overlay/* /
+cp -R --no-preserve=ownership /overlay/* /
+chown -R 1000:1000 /home/arcade
 EOCHR
+
+
+#
+# Update volume name everywhere
+#
+log "Updating volume name in boot config files + setup kernel"
+#cp "$SFS_PATH"/boot/vmlinuz-linux-15khz "$GA_ISO_PATH"/arch/boot/x86_64/
+# May as well write it as a find -type f | grep to avoid a static list, depending on arch updates
+conf_files="loader/entries/archiso-x86_64.conf arch/boot/syslinux/archiso_sys.cfg arch/boot/syslinux/archiso_pxe.cfg"
+arch_volume_name=$(isoinfo -d -i "$CACHE/$isoname" | grep "Volume id:" | sed "s/Volume id\: //")
+for file in $conf_files ; do
+  sed -i \
+-e "s/$arch_volume_name/GROOVYARCADE_${GA_VERSION}/g" \
+"$GA_ISO_PATH/$file"
+#-e "s/vmlinuz/vmlinuz-linux-15khz/g" \
+
+done
+
+cat << EOCHR | chroot "$SFS_PATH"
+mkinitcpio -p linux-15khz
+EOCHR
+
+cp "$SFS_PATH"/boot/vmlinuz-linux-15khz "$GA_ISO_PATH"/arch/boot/x86_64/vmlinuz
+cp "$SFS_PATH"/boot/initramfs-linux-15khz.img "$GA_ISO_PATH"/arch/boot/x86_64/archiso.img
+rm "$SFS_PATH"/boot/initramfs-linux-15khz-fallback.img
+# gasetup expects a vmlinuz
+cp "$SFS_PATH"/boot/vmlinuz-linux-15khz "$SFS_PATH"/boot/vmlinuz-linux
+cp "$SFS_PATH"/boot/initramfs-linux-15khz.img "$GA_ISO_PATH"/arch/boot/x86_64/archiso.img
+
 
 #
 # umount bind mountpoints before rebuilding the iso
@@ -146,33 +207,45 @@ umount "$SFS_PATH"/sys
 umount "$SFS_PATH"/work
 umount "$SFS_PATH"/overlay
 
+
 #
 # Rebuild squashfs
 #
 log "Resquashing arch linux to the GA iso folder"
 rm -f "$GA_ISO_PATH"/arch/x86_64/airootfs.sfs
 mksquashfs "$SFS_PATH" "$GA_ISO_PATH"/arch/x86_64/airootfs.sfs || die 4 "Failed to rebuild the squashfs. Aborting"
-(cd "$GA_ISO_PATH"/arch/x86_64/ && sha512sum airootfs.sfs > airootfs.sha512)
+
 
 #
-# Update volume name everywhere
+# Compute the squashfs checksum
 #
-log "Updating volume name in boot config files"
-# May as well write it as a find -type f | grep to avoid a static list, depending on arch updates
-conf_files="loader/entries/archiso-x86_64.conf arch/boot/syslinux/archiso_sys.cfg arch/boot/syslinux/archiso_pxe.cfg"
-arch_volume_name=`isoinfo -d -i "$CACHE/$isoname" | grep "Volume id:" | sed "s/Volume id\: //"`
-for file in $conf_files ; do
-  sed -i "s/$arch_volume_name/GROOVYARCADE_${GA_VERSION}/g" "$GA_ISO_PATH/$file"
-done
+log "Computing sha512"
+(cd "$GA_ISO_PATH"/arch/x86_64/ && sha512sum airootfs.sfs > airootfs.sha512)
 
 
 #
 # Rebuild the EFI img
 #
-log "Rebuilding efiboot.img with new config files"
+log "Rebuilding efiboot.img with new config files - uncomplete (missing kernel and initramfs)"
 mount -t vfat -o loop "$GA_ISO_PATH"/EFI/archiso/efiboot.img "$EFI_PATH"
 sed -i "s/$arch_volume_name/GROOVYARCADE_${GA_VERSION}/g" "$EFI_PATH/loader/entries/archiso-x86_64.conf"
 umount "$EFI_PATH"
+
+
+#
+# Copy the DVD overlay
+#
+log "Copying the iso overlay"
+ls "$ISO_OVERLAY"
+cp -R "$ISO_OVERLAY/"* "$GA_ISO_PATH"
+
+#
+# Final touch to the DVD
+#
+log "Last DVD customizations"
+# Point ot the right cfg file (the GA one, not default arch one)
+#sed -i "s+archiso\.cfg+isolinux\.cfg+" "$GA_ISO_PATH/isolinux/isolinux.cfg" # Not needed anymore, file gotten from overlay
+sed -i "s+archisolabel=GROOVY+archisolabel=GROOVYARCADE_${GA_VERSION}+g" "$GA_ISO_PATH/arch/boot/syslinux/syslinux.cfg"
 
 
 #
@@ -206,18 +279,21 @@ xorriso -as mkisofs \
   "$GA_ISO_PATH"
   #-full-iso9660-filenames \
 
+
 #
 # Compress the iso
 #
 log "xz-ing the iso..."
-xz -v9T0 "$GA_ISO_FILE"
+[[ -z $SKIP_XZ ]] && xz -v9T0 "$GA_ISO_FILE"
+
 
 #
 # Cleaning
 #
 log "Cleaning"
 mv "$SFS_PATH"/etc/resolv.conf.original "$SFS_PATH"/etc/resolv.conf
-rm -rf "$SFS_PATH" "$GA_ISO_PATH" "$EFI_PATH"
+rm -rf "$ARCH_ISO_PATH" "$SFS_PATH" "$GA_ISO_PATH" "$EFI_PATH" "$WORK/overlay"
+
 
 #
 # Tadaaaaa
