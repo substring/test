@@ -36,6 +36,8 @@ before_script:
     paths:
       - work/output
     expire_in: 1 mos
+  tags:
+      - bigCPU
 
 .build_groovyarcade_iso_template: &buildgroovyarcadeiso
   stage: build_iso
