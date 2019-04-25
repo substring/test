@@ -1,18 +1,19 @@
 diff --git a/mame/trunk/PKGBUILD b/mame/trunk/PKGBUILD
-index 0a8780d52b1..42ab3bd637e 100644
+index ca612c4512f..e743498e98b 100644
 --- a/mame/trunk/PKGBUILD
 +++ b/mame/trunk/PKGBUILD
-@@ -3,46 +3,53 @@
+@@ -3,46 +3,54 @@
  # Contributor: robb_force <robb_force@holybuffalo.net>
  # Contributor: JJDaNiMoTh <jjdanimoth@gmail.com>
  
 -pkgname=mame
 +pkgname=groovymame
- pkgver=0.208
-+_mamever=${pkgver/./}
+ pkgver=0.209
  pkgrel=1
 -pkgdesc="A port of the popular Multiple Arcade Machine Emulator using SDL with OpenGL support."
-+pkgdesc="A CRT oriented of the popular MAME emulator"
++_mamever=${pkgver/./}
++_switchresver=017n
++pkgdesc="A CRT oriented brew of the popular MAME emulator"
  url="https://mamedev.org/"
  license=(GPL2)
  arch=(x86_64)
@@ -22,11 +23,12 @@ index 0a8780d52b1..42ab3bd637e 100644
  conflicts=(sdlmame)
  replaces=(sdlmame)
 -source=("https://github.com/mamedev/mame/archive/mame${pkgver/./}.tar.gz" mame.sh)
-+source=("https://github.com/mamedev/mame/archive/mame${_mamever}.tar.gz" mame.sh 0208_groovymame_017n.diff)
- sha256sums=('d02dba8e144ac11878226ef48aa8e4d30a33d77dd72210f84e9803908c70e8b2'
--            'da37e17b53759f049234af393bc69c29e1e4aab58df44a9384e7f7160a49db29')
-+            'da37e17b53759f049234af393bc69c29e1e4aab58df44a9384e7f7160a49db29'
-+            'caf50d685458a2b9c96d96f7bbe38c79cdc7878d8e22864ce81fe2514feadea5')
++source=("https://github.com/mamedev/mame/archive/mame${_mamever}.tar.gz" mame.sh ${_mamever}_groovymame_${_switchresver}.diff)
+ sha256sums=('9442e88bd87cfe407eb093a2ecb42a3850cabe31cd52c4efdef1bf7f584a8eab'
+-            'ee1c59bafc5e5441e99fa4c58108a3e18048e60672f34de865c8a5a976094dba')
++            'ee1c59bafc5e5441e99fa4c58108a3e18048e60672f34de865c8a5a976094dba'
++            '2c8aad7acbe1e4dd9a3d3beda56be238a25ceffda32fcb249b9d395018f0c733')
++
  
  
  prepare() {
@@ -34,24 +36,22 @@ index 0a8780d52b1..42ab3bd637e 100644
 +  cd mame-mame${_mamever}
  
  # Use system libraries
-+  msg2 "Use system libraries..."
    sed -e 's|\# USE_SYSTEM_LIB|USE_SYSTEM_LIB|g' -i makefile
-+  # Apply GroovyMAME patch
++
 +  msg2 "Apply groovymame patch..."
-+  patch -p0 --binary -i "${srcdir}/0208_groovymame_017n.diff"
++  patch -p0 --binary -i "${srcdir}/${_mamever}_groovymame_${_switchresver}.diff"
  }
  
  build() {
 -  cd mame-mame${pkgver/./}
-+  cd mame-mame${_mamever}
 -  make \
++  cd mame-mame${_mamever}
 +  CCACHE_CPP2=yes make OVERRIDE_CC="ccache gcc" OVERRIDE_CXX="ccache g++" \
      NOWERROR=1 \
      OPTIMIZE=2 \
      TOOLS=1 \
--    ARCHOPTS=-flifetime-dse=1
-+    PTR64=1 NOASM=0\
-+    ARCHOPTS=-flifetime-dse=1 TARGET=mame SUBTARGET=arcade
++    PTR64=1 NOASM=0 TARGET=mame SUBTARGET=arcade \
+     ARCHOPTS=-flifetime-dse=1
  }
  
  package() {
@@ -65,11 +65,11 @@ index 0a8780d52b1..42ab3bd637e 100644
  
    # Install the binaries
 -  install -Dm755 mame64 "$pkgdir"/usr/lib/mame/mame
-+  install -Dm755 mamearcade64 "$pkgdir"/usr/lib/mame/mame
++  install -Dm755 mamearcade64 "$pkgdir"/usr/lib/mame/groovymame
    for _i in castool chdman imgtool jedutil nltool nlwav pngcmp regrep romcmp src2html \
              split srcclean ldverify ldresample; do
      install -m755 $_i -t "$pkgdir"/usr/lib/mame
-@@ -50,8 +57,8 @@ package() {
+@@ -50,8 +58,8 @@ package() {
    done
  
    # Install the extra bits
@@ -80,14 +80,3 @@ index 0a8780d52b1..42ab3bd637e 100644
  
    # Include the license
    install -Dm644 docs/LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
-@@ -64,8 +71,8 @@ package() {
- 
-   # documentation
-   install -dm0755 "$pkgdir"/usr/share/doc
--  cp -a docs "$pkgdir"/usr/share/doc/$pkgname
--  rm -r "$pkgdir"/usr/share/doc/$pkgname/man
-+  cp -a docs "$pkgdir"/usr/share/doc/mame
-+  rm -r "$pkgdir"/usr/share/doc/mame/man
-   install -d "$pkgdir"/usr/share/man/man{1,6}
-   install -m644 docs/man/*.1* "$pkgdir"/usr/share/man/man1/
-   install -m644 docs/man/*.6* "$pkgdir"/usr/share/man/man6/
