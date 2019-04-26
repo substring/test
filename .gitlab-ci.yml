@@ -36,8 +36,6 @@ before_script:
     paths:
       - work/output
     expire_in: 1 mos
-  tags:
-      - bigCPU
 
 .build_groovyarcade_iso_template: &buildgroovyarcadeiso
   stage: build_iso
@@ -86,6 +84,8 @@ build_packages_manual:
   stage: makepkg
   <<: *notmaster
   <<: *buildpackages
+  tags:
+    - bigCPU
 
 build_iso_manual:
   <<: *notmaster
@@ -95,6 +95,8 @@ build_packages:
   stage: makepkg
   <<: *onlymasterortags
   <<: *buildpackages
+  tags:
+    - bigCPU
 
 build_iso:
   <<: *onlymasterortags
