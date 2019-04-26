@@ -89,7 +89,7 @@ log "Setting up pacman"
 cat << EOF | chroot "$SFS_PATH"
 pacman-key --init
 pacman-key --populate archlinux
-pacman -Sy
+pacman -Syu --no-confirm
 killall gpg-agent
 EOF
 

@@ -10,7 +10,7 @@ stages:
 before_script:
   - pacman-key --init && \
     pacman-key --populate archlinux && \
-    pacman -Sy
+    pacman -Syu --no-confirm
 
 .build_packages_template: &buildpackages
   script:
