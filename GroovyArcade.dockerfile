@@ -11,9 +11,10 @@ RUN pacman -Sy --noconfirm --needed \
   namcap \
   wget
 
+RUN pacman -Syu --noconfirm
+
 RUN pacman-key --init && \
-    pacman-key --populate archlinux && \
-    pacman -Syu --no-confirm
+    pacman-key --populate archlinux
 
 RUN curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
 

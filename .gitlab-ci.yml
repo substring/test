@@ -8,9 +8,9 @@ stages:
   - release
 
 before_script:
+  - pacman -Syu --noconfirm
   - pacman-key --init && \
-    pacman-key --populate archlinux && \
-    pacman -Syu --no-confirm
+    pacman-key --populate archlinux || true
 
 .build_packages_template: &buildpackages
   script:
