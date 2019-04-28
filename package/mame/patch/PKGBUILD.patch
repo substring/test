@@ -2,7 +2,7 @@ diff --git a/mame/trunk/PKGBUILD b/mame/trunk/PKGBUILD
 index ca612c4512f..e743498e98b 100644
 --- a/mame/trunk/PKGBUILD
 +++ b/mame/trunk/PKGBUILD
-@@ -3,46 +3,54 @@
+@@ -3,46 +3,55 @@
  # Contributor: robb_force <robb_force@holybuffalo.net>
  # Contributor: JJDaNiMoTh <jjdanimoth@gmail.com>
  
@@ -66,6 +66,7 @@ index ca612c4512f..e743498e98b 100644
    # Install the binaries
 -  install -Dm755 mame64 "$pkgdir"/usr/lib/mame/mame
 +  install -Dm755 mamearcade64 "$pkgdir"/usr/lib/mame/groovymame
++  ln -s ./groovymame "$pkgdir"/usr/lib/mame/mame
    for _i in castool chdman imgtool jedutil nltool nlwav pngcmp regrep romcmp src2html \
              split srcclean ldverify ldresample; do
      install -m755 $_i -t "$pkgdir"/usr/lib/mame
