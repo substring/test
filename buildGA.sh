@@ -183,8 +183,13 @@ for file in $conf_files ; do
 
 done
 
+# mkinitcpio ignores -c if the perset sets the .conf file
+# So we have fun swapping files
 cat << EOCHR | chroot "$SFS_PATH"
+cp /etc/mkinitcpio.conf /etc/mkinitcpio-groovyarcade.conf
+cp /etc/mkinitcpio-dvd.conf /etc/mkinitcpio.conf
 mkinitcpio -p linux-15khz
+cp /etc/mkinitcpio-groovyarcade.conf /etc/mkinitcpio.conf
 EOCHR
 
 cp "$SFS_PATH"/boot/vmlinuz-linux-15khz "$GA_ISO_PATH"/arch/boot/x86_64/vmlinuz
