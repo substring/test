@@ -87,10 +87,12 @@ cp /etc/resolv.conf "$SFS_PATH"/etc/resolv.conf
 log "Setting up pacman"
 # Now get pacman ready
 cat << EOF | chroot "$SFS_PATH"
-pacman -Syu --noconfirm
 pacman-key --init
 pacman-key --populate archlinux
 killall gpg-agent
+pacman -Sy --noconfirm reflector
+reflector --verbose --latest 50 --sort rate --save /etc/pacman.d/mirrorlist 
+pacman -Syu --noconfirm
 EOF
 
 #
