@@ -1,23 +1,35 @@
-retroarch
+#Emulators and games
+#retroarch
 mednafen
 mupen64plus
 snes9x
 stella
-bluez
+yabause-gtk
+#Xorg part
 xorg
 xf86-video-ati
 xf86-video-intel
 xf86-video-nouveau
 xf86-video-vesa
+xf86-input-libinput
 xorg-xinit
+xorg-mkfontdir
+xorg-xset
+xorg-xwininfo
 xterm
-hwinfo
-icu
-connman
-grub
-fbset
+mesa
+# Window manager / Desktop environment
 openbox
+lxde
+# Hardware suff
+alsa-utils
+bluez
+connman
+fbset
+hwinfo
 read-edid
+samba
+sdl2
+sdl2_ttf
 udevil
 udisks2
-lxde
