@@ -109,7 +109,7 @@ pacman-key --populate archlinux
 killall gpg-agent
 pacman -Sy --noconfirm reflector
 reflector --verbose --latest 50 --sort rate --save /etc/pacman.d/mirrorlist 
-pacman -Syu --noconfirm
+pacman -Syu --noconfirm --ignore linux
 EOF
 
 
@@ -131,7 +131,7 @@ EOCHR
 # Install arch packages
 #
 log "Installing Arch linux genuine packages"
-packages=$(tr '\n' ' ' < packages_native.lst)
+packages=$(grep -v '^#' packages_native.lst | tr '\n' ' ')
 #cat << EOF | chroot "$SFS_PATH"
 #for pck in $packages ; do
 #pacman -S --noconfirm \$pck
@@ -201,6 +201,23 @@ cp "$SFS_PATH"/boot/initramfs-linux-15khz.img "$GA_ISO_PATH"/arch/boot/x86_64/ar
 
 
 #
+# Final touch
+#
+cat << EOCHR | chroot "$SFS_PATH"
+systemctl enable smb
+systemctl enable nmb
+EOCHR
+
+
+#
+# List embedded packages
+#
+cat << EOCHR | chroot "$SFS_PATH"
+pacman -Qe > /work/pkglist.txt
+EOCHR
+
+
+#
 # umount bind mountpoints before rebuilding the iso
 #
 log "Unmounting bind mounts"
@@ -243,6 +260,7 @@ umount "$EFI_PATH"
 log "Copying the iso overlay"
 ls "$ISO_OVERLAY"
 cp -R "$ISO_OVERLAY/"* "$GA_ISO_PATH"
+
 
 #
 # Final touch to the DVD
