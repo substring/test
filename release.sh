@@ -13,7 +13,7 @@ cancel_and_exit() {
 #
 # Create a release
 #
-function create_release () {
+create_release() {
 	echo "Creating release $tag"
 $ghr release \
     --tag "$tag" \
@@ -25,9 +25,10 @@ $ghr release \
 #
 # Upload repo + packages + iso
 #
-function upload_assets() {
+upload_assets() {
+# Just build the repo only if packages are available
 echo "Preparing the AUR repo"
-which repo-add && repo-add "${_output}"/groovyarcade.db.tar.gz "${_output}"/*.pkg.tar.xz
+command -v repo-add && ls "${_output}"/*.pkg.tar.xz >/dev/null && repo-add "${_output}"/groovyarcade.db.tar.gz "${_output}"/*.pkg.tar.xz
 
 while read -r file ; do
   filename=$(basename "$file")
@@ -40,7 +41,7 @@ while read -r file ; do
 done < "${_output}"/built_packages
 
 # Upload the iso
-[[ ! -f ${_output}//${_iso}.xz ]] && cancel_and_exit
+[[ ! -f ${_output}/${_iso}.xz ]] && cancel_and_exit
 echo "Uploading ${_iso}.xz..."
 $ghr upload \
     --tag "$tag" \
@@ -52,7 +53,7 @@ $ghr upload \
 #
 # Make the release definitive
 #
-function publish_release () {
+publish_release() {
 	echo "Publihing release $tag"
 $ghr edit \
     --tag "$tag" \
@@ -63,7 +64,7 @@ $ghr edit \
 #
 # Remove a release
 #
-function delete_release () {
+delete_release() {
 echo "Deleting release $tag..."
 $ghr delete \
     --tag "$tag"

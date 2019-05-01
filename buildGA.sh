@@ -319,6 +319,13 @@ rm -rf "$ARCH_ISO_PATH" "$SFS_PATH" "$GA_ISO_PATH" "$EFI_PATH" "$WORK/overlay"
 
 
 #
+# Ugly step : release the iso from here
+#
+log "Release the ISO to github"
+./release.sh -u
+
+
+#
 # Tadaaaaa
 #
 log "Finished!"

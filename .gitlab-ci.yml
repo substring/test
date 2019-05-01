@@ -3,8 +3,10 @@ image: archlinux/base:latest
 stages:
   - prechecks
   - makepkg
+  - pre-release
   - build_iso
   - release
+  - clean
 
 before_script:
   - pacman-key --init && \
@@ -51,16 +53,26 @@ before_script:
     expire_in: 1 mos
 
 .branches_but_master: &notmaster
-  when: manual
   only:
     - branches
   except:
     - master
+  when: manual
 
 .only_master: &onlymasterortags
   only:
     - master
     - tags
+
+.only_tags_template: &onlytags
+  only:
+    - tags
+
+.setup_github_release_template: &setup_github_release
+  script:
+    - pacman -S --noconfirm --needed tar xz grep
+    - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
+  
 
 bash_lint:
   image: koalaman/shellcheck-alpine
@@ -75,10 +87,10 @@ bash_lint:
 basic_checks:
   stage: prechecks
   <<: *notmaster
+  when: always
   variables:
     MAKEPKG_OPTS: "--nobuild --nodeps"
   <<: *buildpackages
-  when: always
 
 build_packages_manual:
   stage: makepkg
@@ -87,10 +99,6 @@ build_packages_manual:
   tags:
     - bigCPU
 
-build_iso_manual:
-  <<: *notmaster
-  <<: *buildgroovyarcadeiso
-
 build_packages:
   stage: makepkg
   <<: *onlymasterortags
@@ -98,16 +106,58 @@ build_packages:
   tags:
     - bigCPU
 
+prepare_release:
+  stage: pre-release
+  <<: *onlytags
+  <<: *setup_github_release
+  script:
+    - ./release.sh -c
+
+prepare_release_manual:
+  stage: pre-release
+  <<: *notmaster
+  <<: *setup_github_release
+  script:
+    - ./release.sh -c
+
+
+build_iso_manual:
+  dependencies: 
+    - build_packages_manual
+  <<: *notmaster
+  <<: *buildgroovyarcadeiso
+
 build_iso:
   <<: *onlymasterortags
   <<: *buildgroovyarcadeiso
 
+upload_assets:
+  stage: release
+  <<: *onlytags
+  <<: *setup_github_release
+  script:
+    - ./release.sh -u
+
 release_github:
   stage: release
+  <<: *onlytags
+  <<: *setup_github_release
   script:
-    - echo "Releasing GroovyArcade"
-    - pacman -Sy --noconfirm --needed tar xz grep
-    - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
-    - ./release.sh
-  only:
-    - tags
+    - ./release.sh -p
+
+release_github_manual:
+  stage: release
+  dependencies: 
+    - build_iso_manual
+  <<: *notmaster
+  <<: *setup_github_release
+  script:
+    - ./release.sh -p
+
+delete_release:
+  stage: clean
+  <<: *notmaster
+  <<: *setup_github_release
+  when: on_failure
+  script:
+    - ./release.sh -d || true
