@@ -72,7 +72,7 @@ before_script:
   script:
     - pacman -S --noconfirm --needed tar xz grep
     - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
-  
+    - ./release.sh $RELEASE_OPTS
 
 bash_lint:
   image: koalaman/shellcheck-alpine
@@ -108,18 +108,17 @@ build_packages:
 
 prepare_release:
   stage: pre-release
+  variables:
+    RELEASE_OPTS: "-c"
   <<: *onlytags
   <<: *setup_github_release
-  script:
-    - ./release.sh -c
 
 prepare_release_manual:
   stage: pre-release
+  variables:
+    RELEASE_OPTS: "-c"
   <<: *notmaster
   <<: *setup_github_release
-  script:
-    - ./release.sh -c
-
 
 build_iso_manual:
   dependencies: 
@@ -133,31 +132,31 @@ build_iso:
 
 upload_assets:
   stage: release
+  variables:
+    RELEASE_OPTS: "-u"
   <<: *onlytags
   <<: *setup_github_release
-  script:
-    - ./release.sh -u
 
 release_github:
   stage: release
+  variables:
+    RELEASE_OPTS: "-p"
   <<: *onlytags
   <<: *setup_github_release
-  script:
-    - ./release.sh -p
 
 release_github_manual:
   stage: release
+  variables:
+    RELEASE_OPTS: "-p"
   dependencies: 
     - build_iso_manual
   <<: *notmaster
   <<: *setup_github_release
-  script:
-    - ./release.sh -p
 
 delete_release:
   stage: clean
+  variables:
+    RELEASE_OPTS: "-d ||true"
   <<: *notmaster
   <<: *setup_github_release
   when: on_failure
-  script:
-    - ./release.sh -d || true
