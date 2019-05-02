@@ -44,13 +44,9 @@ before_script:
   stage: build_iso
   script:
     - echo "Building iso"
-    - pacman -S --noconfirm --needed archiso mkinitcpio cdrtools wget
-    - whoami
+    - pacman -S --noconfirm --needed archiso mkinitcpio cdrtools wget tar xz grep
+    - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
     - ./buildGA.sh
-  artifacts:
-    paths:
-      - work/output/*.iso.xz
-    expire_in: 1 mos
 
 .branches_but_master: &notmaster
   only:
@@ -109,14 +105,14 @@ build_packages:
 prepare_release:
   stage: pre-release
   variables:
-    RELEASE_OPTS: "-c"
+    RELEASE_OPTS: "-cu"
   <<: *onlytags
   <<: *setup_github_release
 
 prepare_release_manual:
   stage: pre-release
   variables:
-    RELEASE_OPTS: "-c"
+    RELEASE_OPTS: "-cu"
   <<: *notmaster
   <<: *setup_github_release
 
@@ -129,13 +125,6 @@ build_iso_manual:
 build_iso:
   <<: *onlymasterortags
   <<: *buildgroovyarcadeiso
-
-upload_assets:
-  stage: release
-  variables:
-    RELEASE_OPTS: "-u"
-  <<: *onlytags
-  <<: *setup_github_release
 
 release_github:
   stage: release
@@ -156,7 +145,7 @@ release_github_manual:
 delete_release:
   stage: clean
   variables:
-    RELEASE_OPTS: "-d ||true"
+    RELEASE_OPTS: "-d || true"
   <<: *notmaster
   <<: *setup_github_release
   when: on_failure

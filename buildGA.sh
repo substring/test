@@ -288,9 +288,11 @@ genisoimage -l -r -J -V "GROOVYARCADE_${GA_VERSION}" \
   ./
 )
 
+# Volume ID is limited to 32 chars
+volume_id="GROOVYARCADE_${GA_VERSION:0:19}"
 xorriso -as mkisofs \
   -iso-level 3 \
-  -volid "GROOVYARCADE_${GA_VERSION}" \
+  -volid "$volume_id" \
   -eltorito-boot isolinux/isolinux.bin \
   -eltorito-catalog isolinux/boot.cat \
   -no-emul-boot -boot-load-size 4 -boot-info-table \
@@ -322,7 +324,7 @@ rm -rf "$ARCH_ISO_PATH" "$SFS_PATH" "$GA_ISO_PATH" "$EFI_PATH" "$WORK/overlay"
 # Ugly step : release the iso from here
 #
 log "Release the ISO to github"
-./release.sh -u
+./release.sh -i
 
 
 #

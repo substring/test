@@ -9,6 +9,19 @@ cancel_and_exit() {
   exit 1
 }
 
+#
+# Check we have something to upload
+#
+need_assets() {
+  if [[ -d /work ]] ; then
+  _output=/work/output
+elif [[ -d ./work ]] ; then
+  _output=./work/output
+else
+  echo "ERROR: no work dir found"
+  exit 1
+fi
+}
 
 #
 # Create a release
@@ -26,6 +39,7 @@ $ghr release \
 # Upload repo + packages + iso
 #
 upload_assets() {
+need_assets
 # Just build the repo only if packages are available
 echo "Preparing the AUR repo"
 command -v repo-add && ls "${_output}"/*.pkg.tar.xz >/dev/null && repo-add "${_output}"/groovyarcade.db.tar.gz "${_output}"/*.pkg.tar.xz
@@ -39,8 +53,14 @@ while read -r file ; do
     --name "$filename" \
     --file "${_output}/$filename" || cancel_and_exit
 done < "${_output}"/built_packages
+}
 
+
+#
 # Upload the iso
+#
+upload_iso() {
+need_assets
 [[ ! -f ${_output}/${_iso}.xz ]] && cancel_and_exit
 echo "Uploading ${_iso}.xz..."
 $ghr upload \
@@ -48,7 +68,6 @@ $ghr upload \
     --name "${_iso}.xz" \
     --file "${_output}/${_iso}.xz" || cancel_and_exit
 }
-
 
 #
 # Make the release definitive
@@ -70,15 +89,8 @@ $ghr delete \
     --tag "$tag"
 }
 
+_output=
 _iso=groovyarcade_${GA_VERSION}.iso
-if [[ -d /work ]] ; then
-  _output=/work/output
-elif [[ -d ./work ]] ; then
-  _output=./work/output
-else
-  echo "ERROR: no work dir found"
-  exit 1
-fi
 tag=${GA_VERSION}
 
 release_name="GroovyArcade $tag"
@@ -95,23 +107,22 @@ if [[ -z $GITHUB_TOKEN ]] ; then
 fi
 
 # Parse command line
-while getopts "cupd" option; do
+while getopts "cuipd" option; do
   case "${option}" in
     c)
       create_release
-      exit 0
       ;;
     u)
       upload_assets
-      exit 0
+      ;;
+    i)
+      upload_iso
       ;;
     p)
       publish_release
-      exit 0
       ;;
     d)
       delete_release
-      exit 0
       ;;
     *)
       echo "ERROR: options can be -c -u -p or -d only" >&2
@@ -119,6 +130,3 @@ while getopts "cupd" option; do
       ;;
     esac
 done
-
-echo "ERROR: no option provided" >&2
-exit 1
