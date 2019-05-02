@@ -1,6 +1,9 @@
 FROM archlinux/base:latest
 
-RUN pacman -Sy --noconfirm --needed \
+RUN pacman-key --init && \
+    pacman-key --populate archlinux
+
+RUN pacman -Syu --noconfirm --needed \
   archiso \
   mkinitcpio \
   cdrtools \
@@ -9,12 +12,8 @@ RUN pacman -Sy --noconfirm --needed \
   ccache \
   haveged \
   namcap \
-  wget
-
-RUN pacman -Syu --noconfirm
-
-RUN pacman-key --init && \
-    pacman-key --populate archlinux
+  wget \
+  dos2unix
 
 RUN curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
 
@@ -40,4 +39,5 @@ COPY buildContainer.sh /work
 COPY packages_arch.lst /work
 COPY packages_aur.lst /work
 
+CMD sudo pacman -Syu
 CMD /work/buildContainer.sh
