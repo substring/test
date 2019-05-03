@@ -115,9 +115,29 @@ build_aur_manual:
   tags:
     - bigCPU
 
-build_packages:
+build_linux_manual:
   stage: makepkg
   <<: *onlymasterortags
+  variables:
+    MAKEPKG_ARGS: "linux"
+  <<: *buildpackages
+  tags:
+    - bigCPU
+
+build_mame_manual:
+  stage: makepkg
+  <<: *onlymasterortags
+  variables:
+    MAKEPKG_ARGS: "mame"
+  <<: *buildpackages
+  tags:
+    - bigCPU
+
+build_aur_manual:
+  stage: makepkg
+  <<: *onlymasterortags
+  variables:
+    MAKEPKG_ARGS: "-a"
   <<: *buildpackages
   tags:
     - bigCPU
