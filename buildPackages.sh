@@ -43,9 +43,6 @@ do_the_job() {
   echo
 }
 
-# Need to update, that's arch philosophy. The db from the image build can be outdated
-sudo pacman -Syu --noconfirm
-
 rm "$built_packages" 2>/dev/null
 
 # Native arch packages
