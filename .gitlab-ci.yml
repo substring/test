@@ -1,7 +1,6 @@
 image: archlinux/base:latest
 
 stages:
-  - lint
   - prechecks
   - makepkg
   - build_iso
@@ -65,9 +64,8 @@ before_script:
 
 bash_lint:
   image: koalaman/shellcheck-alpine
-  stage: lint
+  stage: prechecks
   allow_failure: true
-  <<: *notmaster
   when: always
   before_script:
     - shellcheck -V
