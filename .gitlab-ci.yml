@@ -115,7 +115,7 @@ build_aur_manual:
   tags:
     - bigCPU
 
-build_linux_manual:
+build_linux:
   stage: makepkg
   <<: *onlymasterortags
   variables:
@@ -124,7 +124,7 @@ build_linux_manual:
   tags:
     - bigCPU
 
-build_mame_manual:
+build_mame:
   stage: makepkg
   <<: *onlymasterortags
   variables:
@@ -133,7 +133,7 @@ build_mame_manual:
   tags:
     - bigCPU
 
-build_aur_manual:
+build_aur:
   stage: makepkg
   <<: *onlymasterortags
   variables:

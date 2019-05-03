@@ -121,7 +121,7 @@ EOF
 pacman_packages_list=
 while read -r package ; do
   pacman_packages_list="$pacman_packages_list /work/$(basename "$package")"
-done < "$OUTPUT/built_packages"
+done < <(cat "$OUTPUT"/built_packages*)
 log "Installing custom packages $pacman_packages_list"
 [[ -z $SKIP_PACKAGES ]] && cat << EOCHR | chroot "$SFS_PATH"
 pacman -U --needed --noconfirm $pacman_packages_list
