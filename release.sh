@@ -49,7 +49,7 @@ while read -r file ; do
     --tag "$tag" \
     --name "$filename" \
     --file "${_output}/$filename" || cancel_and_exit
-done < "${_output}"/built_packages
+done < <(cat work/output/built_packages*)
 }
 
 #

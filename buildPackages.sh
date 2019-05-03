@@ -1,7 +1,7 @@
 #!/bin/bash
 _output=/work/output
 export CCACHE_DIR=/work/cache/ccache
-built_packages="$_output/built_packages"
+built_packages="$_output/built_packages_$(date +%s%3N)"
 
 do_the_job() {
   echo "+-------------------------"
@@ -65,7 +65,7 @@ while read -r package ; do
 done < <(grep "^${package_to_build}$" /work/packages_aur.lst)
 }
 
-rm "$built_packages" 2>/dev/null
+rm "$_output"/built_packages* 2>/dev/null
 
 # Default is to build all packages
 package_to_build=".*"
