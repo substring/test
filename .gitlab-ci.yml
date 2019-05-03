@@ -22,14 +22,14 @@ before_script:
     - sed -ri 's/^BUILDENV=(.*)\!ccache(.*)/BUILDENV=\1ccache\2/' /etc/makepkg.conf
     - mkdir -p work/cache/ccache work/output
     - ln -s "$(pwd)"/work /work
-    - cp packages_*.lst buildContainer.sh /work
+    - cp packages_*.lst buildPackages.sh /work
     - cp -R package /work
     - useradd -ms /bin/bash -d /work build
     - echo 'build ALL=(root) NOPASSWD:ALL' > /etc/sudoers.d/user && chmod 0440 /etc/sudoers.d/user
     - chown -R build:build work /work
     - chmod -R 777 work /work
     - CCACHE_DIR=/work/cache/ccache ccache -s
-    - su - build -c "cd /work && MAKEPKG_OPTS=\"$MAKEPKG_OPTS\" ./buildContainer.sh" 2>&1 | tee work/output/build.log
+    - su - build -c "cd /work && MAKEPKG_OPTS=\"$MAKEPKG_OPTS\" ./buildPackages.sh" 2>&1 | tee work/output/build.log
     - CCACHE_DIR=/work/cache/ccache ccache -s
   cache:
     key: one-key-to-rule-them-all

@@ -35,9 +35,9 @@ USER build
 RUN mkdir -p /work /work/cache/ccache
 
 COPY package /work/package
-COPY buildContainer.sh /work
+COPY buildPackages.sh /work
 COPY packages_arch.lst /work
 COPY packages_aur.lst /work
 
 CMD sudo pacman -Syu
-CMD /work/buildContainer.sh
+CMD /work/buildPackages.sh
