@@ -43,8 +43,7 @@ do_the_job() {
   echo
 }
 
-rm "$built_packages" 2>/dev/null
-
+build_native() {
 # Native arch packages
 while read -r package ; do
   echo "$package" | grep -q "^#" && continue
@@ -52,8 +51,10 @@ while read -r package ; do
   asp update "$package"
   asp checkout "$package"
   do_the_job "$package" || exit 1
-done < /work/packages_arch.lst
+done < <(grep "^${package_to_build}$" /work/packages_arch.lst)
+}
 
+build_aur() {
 # AUR packages
 while read -r package ; do
   echo "$package" | grep -q "^#" && continue
@@ -61,7 +62,34 @@ while read -r package ; do
   wget https://aur.archlinux.org/cgit/aur.git/snapshot/"${package}".tar.gz
   tar xvzf "${package}".tar.gz
   do_the_job "$package" || exit 1
-done < /work/packages_aur.lst
+done < <(grep "^${package_to_build}$" /work/packages_aur.lst)
+}
+
+rm "$built_packages" 2>/dev/null
+
+# Default is to build all packages
+package_to_build=".*"
+
+# Parse command line
+# shellcheck disable=SC2220
+while getopts "na" option; do
+  case "${option}" in
+    n)
+      build_native
+      exit $?
+      ;;
+    a)
+      build_aur
+      exit $?
+      ;;
+  esac
+done
+
+# Tricky thing : if $1 exists, it's a package
+# as we'll grep the .lst files, we need a trick if $1 is empty
+package_to_build=${1:-".*"}
+
+build_native ; build_aur
 
 # run tests on output packages
 #for pack in `ls /work/output/*.pkg.tar.xz ` ; do
