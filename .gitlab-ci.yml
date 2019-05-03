@@ -64,15 +64,15 @@ before_script:
     - tags
 
 bash_lint:
+  image: koalaman/shellcheck-alpine
   stage: lint
   allow_failure: true
   <<: *notmaster
   when: always
+  before_script:
+    - shellcheck -V
   script:
-    - pacman -S --noconfirm glibc shellcheck
-    - rc=0
-    - for file in *.sh ; do shellcheck -x "$file" ; rcsc=$? ; rc=${rc/0/$rcsc} || true ; done
-    - exit $rc
+    - shellcheck -x *.sh
 
 basic_checks:
   stage: prechecks
