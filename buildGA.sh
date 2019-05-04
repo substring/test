@@ -58,7 +58,7 @@ sha1name=sha1sums.txt
 downloads="$sha1name $bootstrapname $isoname"
 if [[ ! -e "$CACHE/$isoname" || ! -e "$CACHE/$sha1name" ]] || ! check_downloads $sha1name ; then
   for dl in $downloads ; do
-    wget -O "$CACHE/${dl}" "$ARCH_URL/iso/$ARCH_VERSION/${dl}"
+    curl -sLo "$CACHE/${dl}" "$ARCH_URL/iso/$ARCH_VERSION/${dl}"
   done
 fi
 
