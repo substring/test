@@ -157,8 +157,6 @@ prepare_release_manual:
   <<: *setup_github_release
 
 build_iso_manual:
-  dependencies: 
-    - build_packages_manual
   <<: *notmaster
   <<: *buildgroovyarcadeiso
 
