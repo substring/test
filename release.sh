@@ -36,13 +36,10 @@ $ghr release \
 }
 
 #
-# Upload repo + packages + iso
+# Upload packages
 #
 upload_assets() {
 need_assets
-# Just build the repo only if packages are available
-echo "Preparing the AUR repo"
-command -v repo-add && ls "${_output}"/*.pkg.tar.xz >/dev/null && repo-add "${_output}"/groovyarcade.db.tar.gz "${_output}"/*.pkg.tar.xz
 
 while read -r file ; do
   filename=$(basename "$file")
@@ -53,6 +50,28 @@ while read -r file ; do
     --name "$filename" \
     --file "${_output}/$filename" || cancel_and_exit
 done < "${_output}"/built_packages
+}
+
+#
+# Upload pacman repo data
+#
+upload_repo() {
+need_assets
+
+# Just build the repo only if packages are available
+echo "Preparing the AUR repo"
+command -v repo-add && ls "${_output}"/*.pkg.tar.xz >/dev/null && repo-add "${_output}"/groovyarcade.db.tar.gz "${_output}"/*.pkg.tar.xz
+
+shopt -s extglob
+for file in "${_output}"/groovyarcade.* ; do
+  filename=$(basename "$file")
+  echo "Uploading repo data $filename ..."
+  # Upload files
+  $ghr upload \
+    --tag "$tag" \
+    --name "$filename" \
+    --file "$file" || cancel_and_exit
+done
 }
 
 
@@ -107,10 +126,13 @@ if [[ -z $GITHUB_TOKEN ]] ; then
 fi
 
 # Parse command line
-while getopts "cuipd" option; do
+while getopts "curipd" option; do
   case "${option}" in
     c)
       create_release
+      ;;
+    r)
+      upload_repo
       ;;
     u)
       upload_assets
@@ -128,5 +150,5 @@ while getopts "cuipd" option; do
       echo "ERROR: options can be -c -u -p or -d only" >&2
       exit 1
       ;;
-    esac
+  esac
 done

@@ -110,6 +110,7 @@ killall gpg-agent
 pacman -Sy --noconfirm reflector
 reflector --verbose --latest 50 --sort rate --save /etc/pacman.d/mirrorlist 
 pacman -Syu --noconfirm --ignore linux
+repo-add /work/groovyarcade.db.tar.gz /work/*.pkg.tar.xz
 EOF
 
 
@@ -206,6 +207,12 @@ cp "$SFS_PATH"/boot/initramfs-linux-15khz.img "$GA_ISO_PATH"/arch/boot/x86_64/ar
 cat << EOCHR | chroot "$SFS_PATH"
 systemctl enable smb
 systemctl enable nmb
+cat << EOF >> /etc/pacman.conf
+
+[groovyarcade]
+SigLevel = PackageOptional
+Server = $PACMAN_REPO
+EOF
 EOCHR
 
 

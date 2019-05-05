@@ -129,14 +129,14 @@ build_iso:
 release_github:
   stage: release
   variables:
-    RELEASE_OPTS: "-p"
+    RELEASE_OPTS: "-rp"
   <<: *onlytags
   <<: *setup_github_release
 
 release_github_manual:
   stage: release
   variables:
-    RELEASE_OPTS: "-p"
+    RELEASE_OPTS: "-rp"
   dependencies: 
     - build_iso_manual
   <<: *notmaster

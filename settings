@@ -11,3 +11,6 @@ fi
 # ARCHLINUX version
 export ARCH_VERSION=2019.05.02
 export ARCH_URL=http://archlinux.mirrors.ovh.net/archlinux
+
+# GroovyArcade Pacman repo
+export PACMAN_REPO=https://github.com/substring/test/releases/latest/download
