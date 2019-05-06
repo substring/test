@@ -145,14 +145,14 @@ build_aur:
 prepare_release:
   stage: pre-release
   variables:
-    RELEASE_OPTS: "-cu"
+    RELEASE_OPTS: "-cur"
   <<: *onlytags
   <<: *setup_github_release
 
 prepare_release_manual:
   stage: pre-release
   variables:
-    RELEASE_OPTS: "-cu"
+    RELEASE_OPTS: "-cur"
   <<: *notmaster
   <<: *setup_github_release
 
@@ -167,14 +167,14 @@ build_iso:
 release_github:
   stage: release
   variables:
-    RELEASE_OPTS: "-rp"
+    RELEASE_OPTS: "-p"
   <<: *onlytags
   <<: *setup_github_release
 
 release_github_manual:
   stage: release
   variables:
-    RELEASE_OPTS: "-rp"
+    RELEASE_OPTS: "-p"
   dependencies: 
     - build_iso_manual
   <<: *notmaster
