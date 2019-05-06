@@ -43,13 +43,15 @@ need_assets
 
 while read -r file ; do
   filename=$(basename "$file")
-  echo "Uploading $filename ..."
+  echo "Uploading $filename ($file)..."
   # Upload files
   $ghr upload \
     --tag "$tag" \
     --name "$filename" \
     --file "${_output}/$filename" || cancel_and_exit
-done < <(cat work/output/built_packages*)
+done < <(cat work/output/built_packages* | sort | uniq -u)
+# Need to sort + uniq because branches have the prebuil stage that 
+# generates a work/output/built_packages file
 }
 
 #
@@ -80,7 +82,9 @@ done
 #
 upload_iso() {
 need_assets
+
 [[ ! -f ${_output}/${_iso}.xz ]] && cancel_and_exit
+
 echo "Uploading ${_iso}.xz..."
 $ghr upload \
     --tag "$tag" \
@@ -92,11 +96,11 @@ $ghr upload \
 # Make the release definitive
 #
 publish_release() {
-	echo "Publihing release $tag"
+echo "Publihing release $tag"
 $ghr edit \
     --tag "$tag" \
     --name "GroovyArcade $tag" \
-    --description "automatic build"
+    --description "automatic build" || cancel_and_exit
 }
 
 #
