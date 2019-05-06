@@ -88,7 +88,7 @@ unsquashfs -d "$SFS_PATH" "$GA_ISO_PATH"/arch/x86_64/airootfs.sfs || die 3 "Coul
 log "Preparing chroot environment"
 # Share mount point
 mkdir -p "$SFS_PATH"/work "$SFS_PATH"/overlay
-mount --bind ./work/output "$SFS_PATH"/work
+mount --bind "$_OUTPUT" "$SFS_PATH"/work
 ( cd "$SFS_PATH" &&
 mount -t proc /proc proc/ &&
 mount --bind --make-slave /sys sys/ &&
@@ -110,22 +110,24 @@ killall gpg-agent
 pacman -Sy --noconfirm reflector
 reflector --verbose --latest 50 --sort rate --save /etc/pacman.d/mirrorlist 
 pacman -Syu --noconfirm --ignore linux
-repo-add /work/groovyarcade.db.tar.gz /work/*.pkg.tar.xz
 EOF
+[[ $? != 0 ]] && die 1 "ERROR: couldn't update the OS"
 
 
 #
 # Install self compiled packages
 #
 #First build the package list
+packages_list=$(built_packages_list)
 pacman_packages_list=
 while read -r package ; do
   pacman_packages_list="$pacman_packages_list /work/$(basename "$package")"
-done < <(cat "$OUTPUT"/built_packages* | sort | uniq -u)
+done < "$packages_list"
 log "Installing custom packages $pacman_packages_list"
 [[ -z $SKIP_PACKAGES ]] && cat << EOCHR | chroot "$SFS_PATH"
 pacman -U --needed --noconfirm $pacman_packages_list
 EOCHR
+[[ $? != 0 ]] && die 9 "ERROR: couldn't install specific packages"
 
 
 #
