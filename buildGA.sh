@@ -111,6 +111,7 @@ pacman -Sy --noconfirm reflector
 reflector --verbose --latest 50 --sort rate --save /etc/pacman.d/mirrorlist 
 pacman -Syu --noconfirm --ignore linux
 EOF
+# shellcheck disable=SC2181
 [[ $? != 0 ]] && die 1 "ERROR: couldn't update the OS"
 
 
@@ -127,6 +128,7 @@ log "Installing custom packages $pacman_packages_list"
 [[ -z $SKIP_PACKAGES ]] && cat << EOCHR | chroot "$SFS_PATH"
 pacman -U --needed --noconfirm $pacman_packages_list
 EOCHR
+# shellcheck disable=SC2181
 [[ $? != 0 ]] && die 9 "ERROR: couldn't install specific packages"
 
 

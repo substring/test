@@ -3,10 +3,10 @@
 # useful variables
 export _OUTPUT=
 # Check we are running in a pipeline, that is in CI
-if [[ -n $CI_PIPELINE_ID ]] ; then
-  _OUTPUT=/work/output
-elif [[ -d ./work ]] ; then
+if [[ -d ./work ]] ; then
   _OUTPUT=./work/output
+elif [[ -d /work ]] ; then
+  _OUTPUT=/work/output
 else
   echo "ERROR: could not define work/output folder" >&2
   exit 1

@@ -14,7 +14,8 @@ cancel_and_exit() {
 # Check we have something to upload
 #
 need_assets() {
-  if [[ ! -d $_OUTPUT ]] ; then
+  ls -l /work || find / -name "*.pkg.tar.xz" || true
+  if [[ ! -d "$_OUTPUT" ]] ; then
     echo "ERROR: no work dir found"
     exit 1
   fi
@@ -38,7 +39,6 @@ $ghr release \
 upload_assets() {
 need_assets
 packages_list="$(built_packages_list)"
-echo $packages_list
 while read -r file ; do
   filename=$(basename "$file")
   echo "Uploading $filename ($file)..."
@@ -47,7 +47,7 @@ while read -r file ; do
     --tag "$tag" \
     --name "$filename" \
     --file "${_OUTPUT}/$filename" || cancel_and_exit
-done < $packages_list
+done < "$packages_list"
 # Need to sort + uniq because branches have the prebuil stage that 
 # generates a work/output/built_packages file
 }
