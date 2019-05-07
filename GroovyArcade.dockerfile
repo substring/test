@@ -38,6 +38,7 @@ COPY package /work/package
 COPY buildPackages.sh /work
 COPY packages_arch.lst /work
 COPY packages_aur.lst /work
+COPY packages_groovy.lst /work
 
 CMD sudo pacman -Syu
 CMD /work/buildPackages.sh

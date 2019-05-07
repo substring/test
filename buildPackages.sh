@@ -15,7 +15,7 @@ do_the_job() {
   fi
   
   # Handle community/AUR package
-  cd "/work/$package/trunk" || cd "/work/$package" || { echo "Couldn't cd to the package dir" ; exit 1 ; }
+  cd "/work/$package/trunk" || cd "/work/$package" || cd "/work/package/$package" || { echo "Couldn't cd to the package dir" ; exit 1 ; }
   
   # The CI can set MAKEPKG_OPTS to "--nobuild --nodeps" for a simple basic check for every branch not tag nor master)
   # So if empty, set some default value
@@ -65,6 +65,15 @@ while read -r package ; do
 done < <(grep "^${package_to_build}$" /work/packages_aur.lst)
 }
 
+build_groovy() {
+while read -r package ; do
+  echo "$package" | grep -q "^#" && continue
+  cd /work || { echo "Couldn't cd to work dir" ; exit 1 ; } 
+  cp -R package/"$package" .
+  do_the_job "$package" || exit 1
+done < <(grep "^${package_to_build}$" /work/packages_groovy.lst)
+}
+
 rm "$_output"/built_packages* 2>/dev/null
 
 # Default is to build all packages
@@ -72,7 +81,7 @@ package_to_build=".*"
 
 # Parse command line
 # shellcheck disable=SC2220
-while getopts "na" option; do
+while getopts "nag" option; do
   case "${option}" in
     n)
       build_native
@@ -82,6 +91,10 @@ while getopts "na" option; do
       build_aur
       exit $?
       ;;
+    g)
+      build_groovy
+      exit $?
+      ;;
   esac
 done
 
@@ -89,7 +102,7 @@ done
 # as we'll grep the .lst files, we need a trick if $1 is empty
 package_to_build=${1:-".*"}
 
-build_native ; build_aur
+build_native ; build_aur ; build_groovy
 
 # run tests on output packages
 #for pack in `ls /work/output/*.pkg.tar.xz ` ; do

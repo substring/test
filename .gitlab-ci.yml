@@ -117,6 +117,17 @@ build_aur_manual:
     paths:
       - work/cache
       
+build_groovy_manual:
+  stage: makepkg
+  <<: *notmaster
+  variables:
+    MAKEPKG_ARGS: "-g"
+  <<: *buildpackages
+  cache:
+    key: cache-groovy
+    paths:
+      - work/cache
+
 build_linux:
   stage: makepkg
   <<: *onlymasterortags
@@ -149,6 +160,13 @@ build_aur:
     key: cache-aur
     paths:
       - work/cache
+
+build_groovy:
+  stage: makepkg
+  <<: *onlymasterortags
+  variables:
+    MAKEPKG_ARGS: "-g"
+  <<: *buildpackages
 
 prepare_release:
   stage: pre-release
