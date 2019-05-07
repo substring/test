@@ -94,8 +94,6 @@ build_linux_manual:
   variables:
     MAKEPKG_ARGS: "linux"
   <<: *buildpackages
-  tags:
-    - bigCPU
 
 build_mame_manual:
   stage: makepkg
@@ -103,8 +101,6 @@ build_mame_manual:
   variables:
     MAKEPKG_ARGS: "mame"
   <<: *buildpackages
-  tags:
-    - bigCPU
 
 build_aur_manual:
   stage: makepkg
@@ -112,8 +108,6 @@ build_aur_manual:
   variables:
     MAKEPKG_ARGS: "-a"
   <<: *buildpackages
-  tags:
-    - bigCPU
 
 build_linux:
   stage: makepkg

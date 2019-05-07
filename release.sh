@@ -14,7 +14,6 @@ cancel_and_exit() {
 # Check we have something to upload
 #
 need_assets() {
-  ls -l /work || find / -name "*.pkg.tar.xz" || true
   if [[ ! -d "$_OUTPUT" ]] ; then
     echo "ERROR: no work dir found"
     exit 1
