@@ -74,6 +74,12 @@ while read -r package ; do
 done < <(grep "^${package_to_build}$" /work/packages_groovy.lst)
 }
 
+namcap_packages() {
+for pack in `ls /work/output/*.pkg.tar.xz ` ; do
+  namcap -i "$pack"
+done
+}
+
 rm "$_output"/built_packages* 2>/dev/null
 
 # Default is to build all packages
@@ -81,7 +87,7 @@ package_to_build=".*"
 
 # Parse command line
 # shellcheck disable=SC2220
-while getopts "nag" option; do
+while getopts "nagc" option; do
   case "${option}" in
     n)
       build_native
@@ -95,6 +101,10 @@ while getopts "nag" option; do
       build_groovy
       exit $?
       ;;
+    c)
+      namcap_packages
+      exit $?
+      ;;
   esac
 done
 
@@ -105,6 +115,3 @@ package_to_build=${1:-".*"}
 build_native ; build_aur ; build_groovy
 
 # run tests on output packages
-#for pack in `ls /work/output/*.pkg.tar.xz ` ; do
-#  namcap -i "$pack"
-#done
