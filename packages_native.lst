@@ -33,3 +33,5 @@ sdl2
 sdl2_ttf
 udevil
 udisks2
+openssh
+evtest
