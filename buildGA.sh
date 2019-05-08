@@ -127,6 +127,7 @@ done < "$packages_list"
 log "Installing custom packages $pacman_packages_list"
 [[ -z $SKIP_PACKAGES ]] && cat << EOCHR | chroot "$SFS_PATH"
 pacman -U --needed --noconfirm $pacman_packages_list
+#cp $pacman_packages_list /var/cache/pacman/pkg/
 EOCHR
 # shellcheck disable=SC2181
 [[ $? != 0 ]] && die 9 "ERROR: couldn't install specific packages"
@@ -211,6 +212,8 @@ cp "$SFS_PATH"/boot/initramfs-linux-15khz.img "$GA_ISO_PATH"/arch/boot/x86_64/ar
 cat << EOCHR | chroot "$SFS_PATH"
 systemctl enable smb
 systemctl enable nmb
+systemctl enable sshd
+rm -rf /var/cache/pacman/pkg/*
 cat << EOF >> /etc/pacman.conf
 
 [groovyarcade]
