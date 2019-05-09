@@ -94,6 +94,8 @@ build_linux_manual:
     key: cache-linux
     paths:
       - work/cache
+  tags:
+    - longOps
 
 build_mame_manual:
   stage: makepkg
@@ -105,6 +107,8 @@ build_mame_manual:
     key: cache-mame
     paths:
       - work/cache
+  tags:
+    - longOps
 
 build_aur_manual:
   stage: makepkg
@@ -138,6 +142,8 @@ build_linux:
     key: cache-linux
     paths:
       - work/cache
+  tags:
+    - longOps
 
 build_mame:
   stage: makepkg
@@ -149,6 +155,8 @@ build_mame:
     key: cache-mame
     paths:
       - work/cache
+  tags:
+    - longOps
 
 build_aur:
   stage: makepkg
