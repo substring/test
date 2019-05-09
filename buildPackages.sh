@@ -15,7 +15,13 @@ do_the_job() {
   fi
   
   # Handle community/AUR package
-  cd "/work/$package/trunk" || cd "/work/$package" || cd "/work/package/$package" || { echo "Couldn't cd to the package dir" ; exit 1 ; }
+  if [[ -d /work/$package/trunk ]] ; then
+    cd /work/"$package"/trunk || return 1
+  elif [[ -d /work/$package ]] ; then
+    cd /work/"$package" ||return 1
+  elif [[ -d /work/package/$package ]] ; then
+    cd /work/package/"$package" || return 1
+  fi
   
   # The CI can set MAKEPKG_OPTS to "--nobuild --nodeps" for a simple basic check for every branch not tag nor master)
   # So if empty, set some default value
@@ -75,7 +81,7 @@ done < <(grep "^${package_to_build}$" /work/packages_groovy.lst)
 }
 
 namcap_packages() {
-for pack in `ls /work/output/*.pkg.tar.xz ` ; do
+for pack in /work/output/*.pkg.tar.xz ; do
   namcap -i "$pack"
 done
 }

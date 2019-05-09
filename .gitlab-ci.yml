@@ -17,7 +17,7 @@ before_script:
 
 .build_packages_template: &buildpackages
   script:
-    - pacman -S --noconfirm --needed mkinitcpio asp base-devel ccache haveged namcap wget sed dos2unix
+    - pacman -S --noconfirm --needed mkinitcpio asp base-devel ccache haveged namcap wget sed dos2unix mercurial
     - sed -i 's/#MAKEFLAGS="-j2"/MAKEFLAGS="-j'$(nproc)'"/' /etc/makepkg.conf
     - sed -ri 's/^BUILDENV=(.*)\!ccache(.*)/BUILDENV=\1ccache\2/' /etc/makepkg.conf
     - mkdir -p work/cache/ccache work/output
