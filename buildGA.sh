@@ -1,5 +1,12 @@
 #!/bin/bash
 
+umount_and_die() {
+  for dir in proc dev sys work overlay ; do
+    umount "$SFS_PATH"/$dir
+  done
+  die "$1" "$2"
+}
+
 #
 # Must be run as root
 #
@@ -93,7 +100,7 @@ mount --bind "$_OUTPUT" "$SFS_PATH"/work
 mount -t proc /proc proc/ &&
 mount --bind --make-slave /sys sys/ &&
 mount --bind --make-slave /dev dev/  
-)
+) || umount_and_die 4 "Failed bind mounting. Are there any mounts remaining from a previous execution of $0 ?"
 # backup chroot resolv.conf
 mv "$SFS_PATH"/etc/resolv.conf "$SFS_PATH"/etc/resolv.conf.original
 cp /etc/resolv.conf "$SFS_PATH"/etc/resolv.conf
@@ -112,7 +119,7 @@ reflector --verbose --latest 50 --sort rate --save /etc/pacman.d/mirrorlist
 pacman -Syu --noconfirm --ignore linux
 EOF
 # shellcheck disable=SC2181
-[[ $? != 0 ]] && die 1 "ERROR: couldn't update the OS"
+[[ -z $SKIP_PACKAGES && $? != 0 ]] && umount_and_die 1 "ERROR: couldn't update the OS"
 
 
 #
@@ -130,7 +137,7 @@ pacman -U --needed --noconfirm $pacman_packages_list
 #cp $pacman_packages_list /var/cache/pacman/pkg/
 EOCHR
 # shellcheck disable=SC2181
-[[ $? != 0 ]] && die 9 "ERROR: couldn't install specific packages"
+[[ -z $SKIP_PACKAGES && $? != 0 ]] && umount_and_die 9 "ERROR: couldn't install specific packages"
 
 
 #
@@ -226,8 +233,8 @@ EOCHR
 #
 # List embedded packages
 #
-cat << EOCHR | chroot "$SFS_PATH"
-pacman -Qe > /work/pkglist.txt
+cat << EOCHR > "$GA_ISO_PATH"/pkglist.txt | chroot "$SFS_PATH"
+pacman -Qe
 EOCHR
 
 
