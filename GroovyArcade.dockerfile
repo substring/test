@@ -40,5 +40,9 @@ COPY packages_arch.lst /work
 COPY packages_aur.lst /work
 COPY packages_groovy.lst /work
 
-CMD sudo pacman -Syu
-CMD /work/buildPackages.sh
+CMD sudo pacman -Syu --noconfirm && /work/buildPackages.sh
+#CMD MAKEPKG_OPTS="--nobuild --nodeps" /work/buildPackages.sh
+#CMD MAKEPKG_OPTS="--packagelist" /work/buildPackages.sh
+#CMD /work/buildPackages.sh retrofe
+#CMD /work/buildPackages.sh -c
+#CMD /work/buildPackages.sh

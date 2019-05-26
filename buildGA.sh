@@ -7,6 +7,11 @@ umount_and_die() {
   die "$1" "$2"
 }
 
+# Useful ENV vars:
+# - SKIP_XZ -> don't xz the final iso image. Saves much time
+# - REPACK_GA -> the aim is just to rebuild the GroovyArcade iso, and not mod the arch dvd
+# - SKIP_PACKAGES -> avoid any pacman command, as if the OS was already up to date
+
 #
 # Must be run as root
 #
@@ -95,7 +100,7 @@ unsquashfs -d "$SFS_PATH" "$GA_ISO_PATH"/arch/x86_64/airootfs.sfs || die 3 "Coul
 log "Preparing chroot environment"
 # Share mount point
 mkdir -p "$SFS_PATH"/work "$SFS_PATH"/overlay
-mount --bind "$_OUTPUT" "$SFS_PATH"/work
+mount -r --bind "$_OUTPUT" "$SFS_PATH"/work
 ( cd "$SFS_PATH" &&
 mount -t proc /proc proc/ &&
 mount --bind --make-slave /sys sys/ &&
@@ -165,6 +170,24 @@ echo -e "arcade\narcade" | passwd arcade
 sed -i "/^# .*wheel.*NOPASSWD.*/s/^# //" /etc/sudoers
 EOCHR
 
+#
+# Generate custom EDIDs
+#
+#log "Creating specific EDID"
+#cat << EOCHR |chroot "$SFS_PATH"
+#DEST=/lib/firmware/edid
+#mkdir -p "\$DEST"
+#/usr/local/bin/switchres 640 480 60 --edid --monitor generic_15
+#mv edid.bin "\$DEST"/arcade_15.bin
+#/usr/local/bin/switchres 512 384 60 --edid --monitor arcade_25
+#mv edid.bin "\$DEST"/arcade_25.bin
+#/usr/local/bin/switchres 512 384 60 --edid --monitor arcade_31
+#mv edid.bin "\$DEST"/arcade_31.bin
+#EOCHR
+
+# We also need our linux-15khz kernel initramfs
+cp "$SFS_PATH"/boot/initramfs-linux-15khz.img "$GA_ISO_PATH"/arch/boot/x86_64/
+
 
 #
 # Apply the overlay
@@ -196,8 +219,9 @@ for file in $conf_files ; do
 
 done
 
-# mkinitcpio ignores -c if the perset sets the .conf file
+# mkinitcpio ignores -c if the preset sets the .conf file
 # So we have fun swapping files
+# At this stage, the edid files are available, so they shouldn't be missing now
 cat << EOCHR | chroot "$SFS_PATH"
 cp /etc/mkinitcpio.conf /etc/mkinitcpio-groovyarcade.conf
 cp /etc/mkinitcpio-dvd.conf /etc/mkinitcpio.conf
@@ -233,7 +257,7 @@ EOCHR
 #
 # List embedded packages
 #
-cat << EOCHR > "$GA_ISO_PATH"/pkglist.txt | chroot "$SFS_PATH"
+cat << EOCHR | chroot "$SFS_PATH" > "$GA_ISO_PATH"/pkglist.txt
 pacman -Qe
 EOCHR
 
@@ -244,12 +268,12 @@ EOCHR
 log "Unmounting bind mounts"
 # those umounts can sometimes be tricky, umount can report that the target is still busy
 #grep archsquash /proc/mounts | cut -f2 -d" " | sort -r| sudo xargs umount -fRnv
+sync
 umount "$SFS_PATH"/proc
 umount "$SFS_PATH"/dev
 umount "$SFS_PATH"/sys
 umount "$SFS_PATH"/work
 umount "$SFS_PATH"/overlay
-
 
 #
 # Rebuild squashfs
@@ -269,7 +293,7 @@ log "Computing sha512"
 #
 # Rebuild the EFI img
 #
-log "Rebuilding efiboot.img with new config files - uncomplete (missing kernel and initramfs)"
+log "Rebuilding efiboot.img with new config files - uncomplete (missing kernel and initramfs, only necessary for UEFI boot)"
 mount -t vfat -o loop "$GA_ISO_PATH"/EFI/archiso/efiboot.img "$EFI_PATH"
 sed -i "s/$arch_volume_name/GROOVYARCADE_${GA_VERSION}/g" "$EFI_PATH/loader/entries/archiso-x86_64.conf"
 umount "$EFI_PATH"
