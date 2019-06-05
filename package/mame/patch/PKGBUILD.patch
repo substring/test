@@ -2,13 +2,13 @@ diff --git a/mame/trunk/PKGBUILD b/mame/trunk/PKGBUILD
 index ca612c4512f..e743498e98b 100644
 --- a/mame/trunk/PKGBUILD
 +++ b/mame/trunk/PKGBUILD
-@@ -3,46 +3,60 @@
+@@ -3,46 +3,59 @@
  # Contributor: robb_force <robb_force@holybuffalo.net>
  # Contributor: JJDaNiMoTh <jjdanimoth@gmail.com>
  
 -pkgname=mame
 +pkgname=groovymame
- pkgver=0.209
+ pkgver=0.210
  pkgrel=1
 -pkgdesc="A port of the popular Multiple Arcade Machine Emulator using SDL with OpenGL support."
 +_mamever=${pkgver/./}
@@ -24,12 +24,11 @@ index ca612c4512f..e743498e98b 100644
  replaces=(sdlmame)
 -source=("https://github.com/mamedev/mame/archive/mame${pkgver/./}.tar.gz" mame.sh)
 +source=("https://github.com/mamedev/mame/archive/mame${_mamever}.tar.gz" mame.sh ${_mamever}_groovymame_${_switchresver}.diff http://mamestuff.lowtrucks.net/MKChamp/suppression_${_mamever}u2.txt)
- sha256sums=('9442e88bd87cfe407eb093a2ecb42a3850cabe31cd52c4efdef1bf7f584a8eab'
+ sha256sums=('4d0b23f3c9f9b2f6283ed78d5afc9a6391d2ee6ce5f0f4bcc2a357ec14aa06c4'
 -            'ee1c59bafc5e5441e99fa4c58108a3e18048e60672f34de865c8a5a976094dba')
 +            'ee1c59bafc5e5441e99fa4c58108a3e18048e60672f34de865c8a5a976094dba'
-+            '2c8aad7acbe1e4dd9a3d3beda56be238a25ceffda32fcb249b9d395018f0c733'
-+            'c2b760f5c901490d8515bcdda5b66371291160bce1d0e0ea5c1ef20416cc91fa')
-+
++            SKIP
++            SKIP)
  
  
  prepare() {
