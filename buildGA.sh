@@ -335,6 +335,12 @@ genisoimage -l -r -J -V "GROOVYARCADE_${GA_VERSION}" \
 
 # Volume ID is limited to 32 chars
 volume_id="GROOVYARCADE_${GA_VERSION:0:19}"
+
+# Set DVD label name in the isolinux.cfg file
+syslinuxcfg="$GA_ISO_PATH"/arch/boot/syslinux/syslinux.cfg
+LABEL=$volume_id envsubst '$LABEL' < "$syslinuxcfg" | tee "$syslinuxcfg"
+# > "$syslinuxcfg"
+
 xorriso -as mkisofs \
   -iso-level 3 \
   -volid "$volume_id" \
