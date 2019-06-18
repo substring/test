@@ -311,10 +311,16 @@ cp -R "$ISO_OVERLAY/"* "$GA_ISO_PATH"
 # Final touch to the DVD
 #
 log "Last DVD customizations"
+# Volume ID is limited to 32 chars
+volume_id="GROOVYARCADE_${GA_VERSION:0:19}"
+
+# Set DVD label name in the isolinux.cfg file
+syslinuxcfg="$ISO_OVERLAY"/arch/boot/syslinux/syslinux.cfg
+LABEL=$volume_id envsubst '${LABEL}' < "$syslinuxcfg" > "$GA_ISO_PATH/arch/boot/syslinux/syslinux.cfg"
 # Point ot the right cfg file (the GA one, not default arch one)
 #sed -i "s+archiso\.cfg+isolinux\.cfg+" "$GA_ISO_PATH/isolinux/isolinux.cfg" # Not needed anymore, file gotten from overlay
 sed -i "s+archisolabel=GROOVY+archisolabel=GROOVYARCADE_${GA_VERSION}+g" "$GA_ISO_PATH/arch/boot/syslinux/syslinux.cfg"
-
+cat "$GA_ISO_PATH/arch/boot/syslinux/syslinux.cfg"
 
 #
 # Rebuild ISO
@@ -332,14 +338,6 @@ genisoimage -l -r -J -V "GROOVYARCADE_${GA_VERSION}" \
   -o "../../$GA_ISO_FILE" \
   ./
 )
-
-# Volume ID is limited to 32 chars
-volume_id="GROOVYARCADE_${GA_VERSION:0:19}"
-
-# Set DVD label name in the isolinux.cfg file
-syslinuxcfg="$GA_ISO_PATH"/arch/boot/syslinux/syslinux.cfg
-LABEL=$volume_id envsubst '$LABEL' < "$syslinuxcfg" | tee "$syslinuxcfg"
-# > "$syslinuxcfg"
 
 xorriso -as mkisofs \
   -iso-level 3 \
