@@ -316,6 +316,7 @@ volume_id="GROOVYARCADE_${GA_VERSION:0:19}"
 
 # Set DVD label name in the isolinux.cfg file
 syslinuxcfg="$ISO_OVERLAY"/arch/boot/syslinux/syslinux.cfg
+# shellcheck disable=SC2016
 LABEL=$volume_id envsubst '${LABEL}' < "$syslinuxcfg" > "$GA_ISO_PATH/arch/boot/syslinux/syslinux.cfg"
 # Point ot the right cfg file (the GA one, not default arch one)
 #sed -i "s+archiso\.cfg+isolinux\.cfg+" "$GA_ISO_PATH/isolinux/isolinux.cfg" # Not needed anymore, file gotten from overlay

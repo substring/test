@@ -27,6 +27,7 @@ alsa-utils
 bluez
 connman
 fbset
+htop
 hwinfo
 read-edid
 samba
