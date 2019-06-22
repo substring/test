@@ -199,7 +199,10 @@ mount --bind "$GA_OVERLAY" "$SFS_PATH"/overlay
 # chown root:root
 cat << EOCHR | chroot "$SFS_PATH"
 cp -R --no-preserve=ownership /overlay/* /
-chown -R 1000:1000 /home/arcade
+chown -R 1000:nobody /home/arcade
+chmod 755 /home/arcade
+chown -R 1000:nobody /home/roms
+chmod 777 /home/roms
 EOCHR
 
 
@@ -231,10 +234,10 @@ EOCHR
 
 cp "$SFS_PATH"/boot/vmlinuz-linux-15khz "$GA_ISO_PATH"/arch/boot/x86_64/vmlinuz
 cp "$SFS_PATH"/boot/initramfs-linux-15khz.img "$GA_ISO_PATH"/arch/boot/x86_64/archiso.img
+cp "$SFS_PATH"/boot/initramfs-linux-15khz.img "$GA_ISO_PATH"/arch/boot/x86_64/
 rm "$SFS_PATH"/boot/initramfs-linux-15khz-fallback.img
 # gasetup expects a vmlinuz
 cp "$SFS_PATH"/boot/vmlinuz-linux-15khz "$SFS_PATH"/boot/vmlinuz-linux
-cp "$SFS_PATH"/boot/initramfs-linux-15khz.img "$GA_ISO_PATH"/arch/boot/x86_64/archiso.img
 
 
 #
