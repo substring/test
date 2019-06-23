@@ -2,7 +2,7 @@ diff --git a/mame/trunk/PKGBUILD b/mame/trunk/PKGBUILD
 index ca612c4512f..e743498e98b 100644
 --- a/mame/trunk/PKGBUILD
 +++ b/mame/trunk/PKGBUILD
-@@ -3,46 +3,59 @@
+@@ -3,46 +3,60 @@
  # Contributor: robb_force <robb_force@holybuffalo.net>
  # Contributor: JJDaNiMoTh <jjdanimoth@gmail.com>
  
@@ -13,6 +13,7 @@ index ca612c4512f..e743498e98b 100644
 -pkgdesc="A port of the popular Multiple Arcade Machine Emulator using SDL with OpenGL support."
 +_mamever=${pkgver/./}
 +_switchresver=017n
++_target=arcade
 +pkgdesc="A CRT oriented brew of the popular MAME emulator"
  url="https://mamedev.org/"
  license=(GPL2)
@@ -54,7 +55,7 @@ index ca612c4512f..e743498e98b 100644
      NOWERROR=1 \
      OPTIMIZE=2 \
      TOOLS=1 \
-+    PTR64=1 NOASM=0 TARGET=mame SUBTARGET=arcade \
++    PTR64=1 NOASM=0 TARGET=mame SUBTARGET=${_target} \
      ARCHOPTS=-flifetime-dse=1
  }
  
@@ -69,12 +70,12 @@ index ca612c4512f..e743498e98b 100644
  
    # Install the binaries
 -  install -Dm755 mame64 "$pkgdir"/usr/lib/mame/mame
-+  install -Dm755 mamearcade64 "$pkgdir"/usr/lib/mame/groovymame
++  install -Dm755 mame${_target}64 "$pkgdir"/usr/lib/mame/groovymame
 +  ln -s ./groovymame "$pkgdir"/usr/lib/mame/mame
    for _i in castool chdman imgtool jedutil nltool nlwav pngcmp regrep romcmp src2html \
              split srcclean ldverify ldresample; do
      install -m755 $_i -t "$pkgdir"/usr/lib/mame
-@@ -50,8 +58,8 @@ package() {
+@@ -50,8 +58,10 @@ package() {
    done
  
    # Install the extra bits
@@ -82,6 +83,8 @@ index ca612c4512f..e743498e98b 100644
 -  cp -ar {artwork,bgfx,plugins,language,ctrlr,keymaps,hash} "$pkgdir"/usr/lib/$pkgname/
 +  install -Dm644 src/osd/modules/opengl/shader/glsl*.*h -t "$pkgdir"/usr/lib/mame/shader/
 +  cp -ar {artwork,bgfx,plugins,language,ctrlr,keymaps,hash} "$pkgdir"/usr/lib/mame/
++  mkdir -p "$pkgdir"/usr/share/mame
++  "$pkgdir"/usr/lib/mame/groovymame -listxml > "$pkgdir"/usr/share/mame/mame.dat
  
    # Include the license
    install -Dm644 docs/LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE

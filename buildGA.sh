@@ -324,7 +324,6 @@ LABEL=$volume_id envsubst '${LABEL}' < "$syslinuxcfg" > "$GA_ISO_PATH/arch/boot/
 # Point ot the right cfg file (the GA one, not default arch one)
 #sed -i "s+archiso\.cfg+isolinux\.cfg+" "$GA_ISO_PATH/isolinux/isolinux.cfg" # Not needed anymore, file gotten from overlay
 sed -i "s+archisolabel=GROOVY+archisolabel=GROOVYARCADE_${GA_VERSION}+g" "$GA_ISO_PATH/arch/boot/syslinux/syslinux.cfg"
-cat "$GA_ISO_PATH/arch/boot/syslinux/syslinux.cfg"
 
 #
 # Rebuild ISO
