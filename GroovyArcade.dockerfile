@@ -13,7 +13,8 @@ RUN pacman -Syu --noconfirm --needed \
   haveged \
   namcap \
   wget \
-  dos2unix
+  dos2unix \
+  mercurial
 
 RUN curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
 
@@ -41,8 +42,7 @@ COPY packages_aur.lst /work
 COPY packages_groovy.lst /work
 
 CMD sudo pacman -Syu --noconfirm && /work/buildPackages.sh
-#CMD MAKEPKG_OPTS="--nobuild --nodeps" /work/buildPackages.sh
-#CMD MAKEPKG_OPTS="--packagelist" /work/buildPackages.sh
-#CMD /work/buildPackages.sh retrofe
-#CMD /work/buildPackages.sh -c
-#CMD /work/buildPackages.sh
+#CMD sudo pacman -Syu --noconfirm && MAKEPKG_OPTS="--nobuild --nodeps" /work/buildPackages.sh
+#CMD sudo pacman -Syu --noconfirm && MAKEPKG_OPTS="--packagelist" /work/buildPackages.sh
+#CMD sudo pacman -Syu --noconfirm && /work/buildPackages.sh antimicro
+#CMD sudo pacman -Syu --noconfirm && /work/buildPackages.sh -c
