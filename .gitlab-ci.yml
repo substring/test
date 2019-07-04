@@ -40,7 +40,7 @@ before_script:
   stage: build_iso
   script:
     - echo "Building iso"
-    - pacman -S --noconfirm --needed archiso mkinitcpio cdrtools tar xz grep
+    - pacman -S --noconfirm --needed archiso mkinitcpio cdrtools tar xz grep gettext
     - curl -L https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2 | tar -jx --strip-components 3 -C /usr/local/bin bin/linux/amd64/github-release
     - ./buildGA.sh
 
