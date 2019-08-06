@@ -9,7 +9,7 @@ elif [[ ! -z ${CI_COMMIT_REF_SLUG} ]] ; then
 fi
 
 # ARCHLINUX version
-export ARCH_VERSION=2019.07.01
+export ARCH_VERSION=2019.08.01
 export ARCH_URL=http://archlinux.mirrors.ovh.net/archlinux
 
 # GroovyArcade Pacman repo
